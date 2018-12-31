@@ -70,7 +70,7 @@ while True:
 
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_RIGHT:
-            if map.first_node_column < map_columns - 10:algorithm
+            if map.first_node_column < map_columns - 10:
                 map.first_node_column += 1
                 my_character.update_map_movement_position(1, 0)
         elif event.key == pygame.K_LEFT:

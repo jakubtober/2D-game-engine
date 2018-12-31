@@ -2,7 +2,7 @@ import sys, pygame, time, random
 from pygame.locals import *
 from apath import astar
 from help_functions import node_info
-
+from apath import MAP_OBSTACLES
 
 class GameObject():
     def __init__(self, object_type, x, y, img=None):
@@ -131,8 +131,8 @@ class Character(GameObject):
                 pygame.display.update()
 
     def find_and_draw_path(self, screen, test_map, start_node, end_node):
-        start_node_not_obsticle = (test_map[start_node[0]][start_node[1]] != 1)
-        end_node_not_obsticle = (test_map[end_node[0]][end_node[1]] != 1)
+        start_node_not_obsticle = (test_map[start_node[0]][start_node[1]] not in MAP_OBSTACLES)
+        end_node_not_obsticle = (test_map[end_node[0]][end_node[1]] not in MAP_OBSTACLES)
 
         if start_node_not_obsticle and end_node_not_obsticle:
             path = astar(test_map, start_node, end_node)
