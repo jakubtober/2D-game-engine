@@ -156,12 +156,40 @@ class Character(GameObject):
 
 
 class Cloud(GameObject):
+    clouds_list = []
+
     def __init__(self, object_type, x, y, img):
         GameObject.__init__(self, 'cloud', x, y, img)
 
-    def draw(self, screen):
-        screen.blit(self.img, (self.x, self.y))
+    def move(self):
         self.x += 1
         if self.x == 800:
             self.x = -100
             self.y = random.randint(100, 700)
+
+    def draw(self, screen):
+        screen.blit(self.img, (self.x, self.y))
+        self.move()
+
+    @classmethod
+    def generate_clouds(cls):
+        for i in range(0, 4):
+            cloud_images = [
+                pygame.image.load("./img/cloud1.png"),
+                pygame.image.load("./img/cloud2.png"),
+                pygame.image.load("./img/cloud3.png"),
+                pygame.image.load("./img/cloud4.png"),
+            ]
+
+            cloud = cls(
+                'cloud',
+                random.randint(0, 600),
+                random.randint(100, 600),
+                cloud_images[random.randint(0, 3)]
+            )
+            cls.clouds_list.append(cloud)
+
+    @classmethod
+    def draw_clouds(cls, screen):
+        for cloud in cls.clouds_list:
+            cloud.draw(screen)

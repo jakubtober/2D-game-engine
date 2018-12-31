@@ -26,24 +26,14 @@ pygame.init()
 size = width, height = 800, 800
 screen = pygame.display.set_mode(size, 0, 32)
 
+# clock init
 FPS = 60
 fpsClock = pygame.time.Clock()
 
-
+# initiate game objects
 map = Map(test_map, 1, 1)
 my_character = Character('knight', 5, 5)
-cloud1 = Cloud(
-    'cloud',
-    random.randint(0, 600),
-    random.randint(100, 600),
-    pygame.image.load("./img/cloud1.png")
-)
-cloud2 = Cloud(
-    'cloud',
-    random.randint(0, 600),
-    random.randint(100, 600),
-    pygame.image.load("./img/cloud2.png")
-)
+Cloud.generate_clouds()
 
 
 #  Main game loop
@@ -91,8 +81,8 @@ while True:
 
     map.draw(screen)
     my_character.draw(screen)
-    cloud1.draw(screen)
-    cloud2.draw(screen)
+
+    Cloud.draw_clouds(screen)
     pygame.display.update()
 
     fpsClock.tick(FPS)
