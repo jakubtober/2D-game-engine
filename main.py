@@ -1,22 +1,25 @@
 import sys, pygame, time, random
 from help_functions import node_info
 from pygame.locals import *
-from game_objects import Map, GameObject, Character, Cloud
+from game_objects import Map, MiniMap, GameObject, Character, Cloud
 
 
 
-test_map = [[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0],
-            [0, 0, 3, 0, 1, 1, 1, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-            [0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]]
+# test_map2 = [[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+#             [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+#             [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0],
+#             [0, 0, 3, 0, 1, 1, 1, 0, 0, 0, 1, 0],
+#             [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+#             [0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+#             [0, 2, 2, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+#             [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+#             [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+#             [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+#             [0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0],
+#             [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]]
+
+test_map = [random.choices([0, 1, 2, 3], [0.7, 0.01, 0.1, 0.001], k=100) for row in range(100)]
+
 
 map_rows = len(test_map)
 map_columns = len(test_map[0])
@@ -32,6 +35,8 @@ fpsClock = pygame.time.Clock()
 
 # initiate game objects
 map = Map(test_map, 1, 1)
+mini_map = MiniMap(map, 700, 0)
+
 my_character = Character('knight', 5, 5)
 Cloud.generate_clouds()
 
@@ -46,7 +51,7 @@ while True:
 
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not my_character.is_moving:
         my_character.end_node = node_info(pygame.mouse.get_pos())
-        my_character.start_node = my_character.node
+        my_character.start_node = my_character.visible_map_node
         my_character.end_node = my_character.end_node
         my_character.path = my_character.find_and_draw_path(
             screen,
@@ -83,6 +88,8 @@ while True:
     my_character.draw(screen)
 
     Cloud.draw_clouds(screen)
+    mini_map.draw(screen, map, my_character)
+
     pygame.display.update()
 
     fpsClock.tick(FPS)

@@ -5,11 +5,19 @@ from help_functions import node_info
 from apath import MAP_OBSTACLES
 
 class GameObject():
+    objects_list = []
+
     def __init__(self, object_type, x, y, img=None):
         self.object_type = object_type
+        self.objects_list.append(self)
         self.x = x
         self.y = y
         self.img = img
+
+    def actual_node(self, map):
+        actual_node_column = map.first_node_column + (self.x // 80)
+        actual_node_row = map.first_node_row + (self.y // 80)
+        return (actual_node_row, actual_node_column)
 
     def draw(self, screen):
         if self.img:
@@ -64,14 +72,41 @@ class Map():
         pygame.draw.rect(screen, (255, 255, 0), (rect_x, rect_y, 80, 80), 1)
 
 
+class MiniMap():
+    def __init__(self, map, screen_x_position, screen_y_position):
+        self.screen_x_position = screen_x_position
+        self.screen_y_position = screen_y_position
+
+    def draw(self, screen, map, character):
+        self.mini_x = self.screen_x_position + map.first_node_column
+        self.mini_y = self.screen_y_position + map.first_node_row
+
+        self.character_x = self.screen_x_position + character.actual_node(map)[1]
+        self.character_y = self.screen_y_position + character.actual_node(map)[0]
+
+        pygame.draw.rect(
+            screen,
+            (100, 100, 100),
+            (self.screen_x_position, self.screen_y_position, 100, 100)
+        )
+        pygame.draw.rect(screen, (200, 200, 200), (self.mini_x, self.mini_y, 8, 8))
+        pygame.draw.circle(
+            screen,
+            (200, 0, 0),
+            (self.character_x, self.character_y),
+            2
+        )
+
 class Character(GameObject):
     def __init__(self, object_type, node_x, node_y):
         GameObject.__init__(self, 'knight', node_x * 80, node_y * 80)
         self.node_column = self.x // 80
         self.node_row = self.y // 80
-        self.is_moving = False
+
         self.start_node = (node_y // 80, node_x // 80)
         self.end_node = ()
+
+        self.is_moving = False
         self.path = []
         self.direction = 'E'
 
@@ -80,7 +115,7 @@ class Character(GameObject):
             self.character_west = pygame.image.load('./img/knight_west.png')
 
     @property
-    def node(self):
+    def visible_map_node(self):
         return (self.y // 80, self.x // 80)
 
     def draw(self, screen):
@@ -104,7 +139,7 @@ class Character(GameObject):
                     self.is_moving = False
                 else:
                     if (self.path[1][1] * 80 == self.x) and (self.path[1][0] * 80 == self.y):
-                        self.path[1] = self.node
+                        self.path[1] = self.visible_map_node
                         self.path.pop(0)
                     else:
                         if (self.path[1][1] * 80 - self.x) < 0:
@@ -157,14 +192,22 @@ class Character(GameObject):
 
 class Cloud(GameObject):
     clouds_list = []
+    cloud_images = [
+        pygame.image.load("./img/cloud1.png"),
+        pygame.image.load("./img/cloud2.png"),
+        pygame.image.load("./img/cloud3.png"),
+        pygame.image.load("./img/cloud4.png"),
+    ]
 
-    def __init__(self, object_type, x, y, img):
+    def __init__(self, x, y, img):
         GameObject.__init__(self, 'cloud', x, y, img)
 
     def move(self):
         self.x += 1
         if self.x == 800:
-            self.x = -100
+            random.shuffle(self.cloud_images)
+            self.img = self.cloud_images[random.randint(0, 3)]
+            self.x = random.randint(-300, - 100)
             self.y = random.randint(100, 700)
 
     def draw(self, screen):
@@ -173,19 +216,12 @@ class Cloud(GameObject):
 
     @classmethod
     def generate_clouds(cls):
+        random.shuffle(cls.cloud_images)
         for i in range(0, 4):
-            cloud_images = [
-                pygame.image.load("./img/cloud1.png"),
-                pygame.image.load("./img/cloud2.png"),
-                pygame.image.load("./img/cloud3.png"),
-                pygame.image.load("./img/cloud4.png"),
-            ]
-
             cloud = cls(
-                'cloud',
-                random.randint(0, 600),
-                random.randint(100, 600),
-                cloud_images[random.randint(0, 3)]
+                random.randint(0, 700),
+                random.randint(0, 700),
+                cls.cloud_images[random.randint(0, 3)]
             )
             cls.clouds_list.append(cloud)
 
@@ -193,3 +229,14 @@ class Cloud(GameObject):
     def draw_clouds(cls, screen):
         for cloud in cls.clouds_list:
             cloud.draw(screen)
+
+
+class Tree(GameObject):
+    def __init__(self, x, y, img, age):
+        GameObject.__init__(self, 'tree', x, y, img)
+        self.age = age
+
+
+class House(GameObject):
+    def __init__(self, x, y, img):
+        GameObject.__init(self, 'house', x, y, img)
