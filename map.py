@@ -9,10 +9,12 @@ class Map():
     house1 = pygame.image.load("./img/house1.png")
 
     def __init__(self, map, first_node_row, first_node_column):
+        self.map = map
+        self.map_rows = len(map)
+        self.map_columns = len(map[0])
         self.first_node_column = first_node_column
         self.first_node_row = first_node_row
-        self.map = map
-        self.whole_map_surface = pygame.Surface((80*100, 80*100))
+        self.whole_map_surface = pygame.Surface((self.map_columns*80, self.map_rows*80))
 
     @property
     def visible_map(self):
@@ -21,8 +23,8 @@ class Map():
         return visible_map
 
     def draw_whole_map(self):
-        visible_map_width = 100
-        map_elements_number = visible_map_width * 100
+        visible_map_width = self.map_columns
+        map_elements_number = visible_map_width * self.map_rows
 
         for node_number in range(map_elements_number):
             # divmod(a, b)
@@ -41,7 +43,7 @@ class Map():
             elif self.map[node_row][node_column] == 3:
                 self.whole_map_surface.blit(self.house1, (x, y))
 
-    def display_whole_map_surface(self, screen):
+    def display_visible_map_surface(self, screen):
         screen.blit(self.whole_map_surface,
             (0, 0),
             (self.first_node_column*80, self.first_node_row*80, 800, 800)

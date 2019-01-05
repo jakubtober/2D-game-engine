@@ -37,13 +37,14 @@ class Character(GameObject):
         self.path = []
         self.direction = 'E'
 
-        if self.object_type == 'knight':
-            self.character_east = pygame.image.load('./img/knight_east.png')
-            self.character_west = pygame.image.load('./img/knight_west.png')
+        self.character_east = pygame.image.load('./img/knight_east.png')
+        self.character_west = pygame.image.load('./img/knight_west.png')
 
-    @property
-    def visible_map_node(self):
-        return (self.y // 80, self.x // 80)
+    def map_node(self, map):
+        return (
+            map.first_node_row + (self.y // 80),
+            map.first_node_column + (self.x // 80)
+        )
 
     def draw(self, screen):
         if self.direction == 'E':
@@ -52,21 +53,23 @@ class Character(GameObject):
             screen.blit(self.character_west, (self.x, self.y))
 
         if self.is_moving:
+            circle_x = ((self.end_node[1] * 80) + 40) # minus map.first_node_column
+            circle_y = ((self.end_node[0] * 80) + 40) # minus map.first_node_row
             pygame.draw.circle(
                 screen,
                 (200, 0, 0),
-                ((self.end_node[1] * 80) + 40 , (self.end_node[0] * 80) + 40),
+                (circle_x , circle_y),
                 20,
                 3
             )
 
-    def move(self):
+    def move(self, map):
             if self.is_moving:
                 if (self.end_node[1] * 80 == self.x) and (self.end_node[0] * 80 == self.y):
                     self.is_moving = False
                 else:
                     if (self.path[1][1] * 80 == self.x) and (self.path[1][0] * 80 == self.y):
-                        self.path[1] = self.visible_map_node
+                        self.path[1] = self.map_node(map)
                         self.path.pop(0)
                     else:
                         if (self.path[1][1] * 80 - self.x) < 0:
@@ -91,29 +94,30 @@ class Character(GameObject):
                     ((next_node[1] * 80) + 40, (next_node[0] * 80) + 40),
                     3)
 
-    def find_and_draw_path(self, screen, test_map, start_node, end_node):
-        start_node_not_obsticle = (test_map[start_node[0]][start_node[1]] not in MAP_OBSTACLES)
-        end_node_not_obsticle = (test_map[end_node[0]][end_node[1]] not in MAP_OBSTACLES)
+    def find_path(self, screen, map, start_node, end_node):
+        print(self.start_node)
+        print(self.end_node)
+        start_node_not_obsticle = (map[start_node[0]][start_node[1]] not in MAP_OBSTACLES)
+        end_node_not_obsticle = (map[end_node[0]][end_node[1]] not in MAP_OBSTACLES)
 
         if start_node_not_obsticle and end_node_not_obsticle:
-            path = astar(test_map, start_node, end_node)
+            path = astar(map, start_node, end_node)
             if path:
-                self.draw_path(screen, path)
                 return path
 
     def update_map_movement_position(self, node_column_change, node_row_change):
         self.x += 80 * (node_column_change * (-1))
         self.y += 80 * (node_row_change * (-1))
-        self.start_node = (
-            self.start_node[0] + (node_row_change * (-1)),
-            self.start_node[1] + (node_column_change * (-1)),
-        )
-        if self.is_moving:
-            self.end_node = (
-                self.end_node[0] + (node_row_change * (-1)),
-                self.end_node[1] + (node_column_change * (-1)),
-            )
-            self.path = [(node[0] + (node_row_change * (-1)), node[1] + (node_column_change * (-1))) for node in self.path]
+        # self.start_node = (
+        #     self.start_node[0] + (node_row_change * (-1)),
+        #     self.start_node[1] + (node_column_change * (-1)),
+        # )
+        # if self.is_moving:
+            # self.end_node = (
+            #     self.end_node[0] + (node_row_change * (-1)),
+            #     self.end_node[1] + (node_column_change * (-1)),
+            # )
+            # self.path = [(node[0] + (node_row_change * (-1)), node[1] + (node_column_change * (-1))) for node in self.path]
 
 
 class Cloud(GameObject):
