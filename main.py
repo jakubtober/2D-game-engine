@@ -31,12 +31,13 @@ size = width, height = 800, 800
 screen = pygame.display.set_mode(size, 0, 32)
 
 # clock init
-FPS = 60
+FPS = 70
 fpsClock = pygame.time.Clock()
 
 # initiate game objects
 map = Map(test_map, 1, 1)
-map.draw()
+# map.draw_visible_map()
+map.draw_whole_map()
 mini_map = MiniMap(map, 700, 0)
 
 my_character = Character('knight', 5, 5)
@@ -44,7 +45,7 @@ Cloud.generate_clouds()
 
 #  Main game loop
 while True:
-    print(fpsClock)
+    # print(fpsClock)
     for event in pygame.event.get():
         if event.type==QUIT:
             pygame.quit()
@@ -69,22 +70,18 @@ while True:
             if map.first_node_column < map_columns - 10:
                 map.first_node_column += 1
                 my_character.update_map_movement_position(1, 0)
-                map.draw()
         elif event.key == pygame.K_LEFT:
             if map.first_node_column > 0:
                 map.first_node_column -= 1
                 my_character.update_map_movement_position(-1, 0)
-                map.draw()
         elif event.key == pygame.K_UP:
             if map.first_node_row > 0:
                 map.first_node_row -= 1
                 my_character.update_map_movement_position(0, -1)
-                map.draw()
         elif event.key == pygame.K_DOWN:
             if map.first_node_row < map_rows - 10:
                 map.first_node_row += 1
                 my_character.update_map_movement_position(0, 1)
-                map.draw()
         elif event.key == pygame.K_ESCAPE:
             pygame.quit()
             sys.exit()
@@ -92,7 +89,7 @@ while True:
     if my_character.is_moving:
         my_character.move()
 
-    map.display_visible_map_surface(screen)
+    map.display_whole_map_surface(screen)
     my_character.draw(screen)
 
     Cloud.draw_clouds(screen)

@@ -12,7 +12,7 @@ class Map():
         self.first_node_column = first_node_column
         self.first_node_row = first_node_row
         self.map = map
-        self.visible_map_surface = pygame.Surface((800, 800))
+        self.whole_map_surface = pygame.Surface((80*100, 80*100))
 
     @property
     def visible_map(self):
@@ -20,31 +20,32 @@ class Map():
         visible_map = [row[self.first_node_column:] for row in sliced_rows]
         return visible_map
 
-    def draw(self):
-        visible_map_width = 10
-        map_elements_number = visible_map_width * 10
+    def draw_whole_map(self):
+        visible_map_width = 100
+        map_elements_number = visible_map_width * 100
 
         for node_number in range(map_elements_number):
             # divmod(a, b)
             # (a // b, a % b)
-            node_column, node_row = divmod(node_number, 10)
+            node_column, node_row = divmod(node_number, 100)
 
             x = (node_column) * 80
             y = (node_row) * 80
 
-            self.visible_map_surface.blit(self.grass, (x, y))
+            self.whole_map_surface.blit(self.grass, (x, y))
 
-            if self.visible_map[node_row][node_column] == 1:
-                self.visible_map_surface.blit(self.rock, (x, y))
-            elif self.visible_map[node_row][node_column] == 2:
-                self.visible_map_surface.blit(self.tree2, (x, y))
-            elif self.visible_map[node_row][node_column] == 3:
-                self.visible_map_surface.blit(self.house1, (x, y))
+            if self.map[node_row][node_column] == 1:
+                self.whole_map_surface.blit(self.rock, (x, y))
+            elif self.map[node_row][node_column] == 2:
+                self.whole_map_surface.blit(self.tree2, (x, y))
+            elif self.map[node_row][node_column] == 3:
+                self.whole_map_surface.blit(self.house1, (x, y))
 
-
-
-    def display_visible_map_surface(self, screen):
-        screen.blit(self.visible_map_surface, (0, 0))
+    def display_whole_map_surface(self, screen):
+        screen.blit(self.whole_map_surface,
+            (0, 0),
+            (self.first_node_column*80, self.first_node_row*80, 800, 800)
+        )
 
         # draw yellow border around node that is pointed by the mouse
         node = node_info(pygame.mouse.get_pos())
