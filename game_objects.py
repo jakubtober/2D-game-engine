@@ -1,8 +1,12 @@
 import sys, pygame, time, random
 from pygame.locals import *
-from apath import astar
-from help_functions import node_info
-from apath import MAP_OBSTACLES
+from apath import astar, MAP_OBSTACLES
+
+from help_functions import (node_info,
+    global_column_to_local_x_coordinate,
+    global_row_to_local_y_coordinate
+)
+
 
 class GameObject():
     objects_list = []
@@ -46,15 +50,20 @@ class Character(GameObject):
             map.first_node_column + (self.x // 80)
         )
 
-    def draw(self, screen):
+    def draw(self, screen, map):
         if self.direction == 'E':
             screen.blit(self.character_east, (self.x, self.y))
         elif self.direction == 'W':
             screen.blit(self.character_west, (self.x, self.y))
 
         if self.is_moving:
-            circle_x = ((self.end_node[1] * 80) + 40) # minus map.first_node_column
-            circle_y = ((self.end_node[0] * 80) + 40) # minus map.first_node_row
+            circle_x = (
+                global_column_to_local_x_coordinate(map, (self.end_node[1])) + 40
+            )
+            circle_y = (
+                global_row_to_local_y_coordinate(map, (self.end_node[0])) + 40
+            )
+
             pygame.draw.circle(
                 screen,
                 (200, 0, 0),
@@ -64,24 +73,29 @@ class Character(GameObject):
             )
 
     def move(self, map):
-            if self.is_moving:
-                if (self.end_node[1] * 80 == self.x) and (self.end_node[0] * 80 == self.y):
-                    self.is_moving = False
+        end_node_x_is_self_x = (global_column_to_local_x_coordinate(map, self.end_node[1]) == self.x)
+        end_node_y_is_self_y = (global_row_to_local_y_coordinate(map, self.end_node[0]) == self.y)
+        second_path_node_x_is_self_x = (global_column_to_local_x_coordinate(map, self.path[1][1]) == self.x)
+        second_path_node_y_is_self_y = (global_row_to_local_y_coordinate(map, self.path[1][0]) == self.y)
+
+        if self.is_moving:
+            if end_node_x_is_self_x and end_node_y_is_self_y:
+                self.is_moving = False
+            else:
+                if second_path_node_x_is_self_x and second_path_node_y_is_self_y:
+                    self.path[1] = self.map_node(map)
+                    self.path.pop(0)
                 else:
-                    if (self.path[1][1] * 80 == self.x) and (self.path[1][0] * 80 == self.y):
-                        self.path[1] = self.map_node(map)
-                        self.path.pop(0)
-                    else:
-                        if (self.path[1][1] * 80 - self.x) < 0:
-                            self.x -= 1
-                            self.direction = 'W'
-                        elif (self.path[1][1] *80 - self.x) > 0:
-                            self.x += 1
-                            self.direction = 'E'
-                        if (self.path[1][0] * 80 - self.y) < 0:
-                            self.y -= 1
-                        elif (self.path[1][0] *80 - self.y) > 0:
-                            self.y += 1
+                    if (global_column_to_local_x_coordinate(map, self.path[1][1]) - self.x) < 0:
+                        self.x -= 1
+                        self.direction = 'W'
+                    elif (global_column_to_local_x_coordinate(map, self.path[1][1]) - self.x) > 0:
+                        self.x += 1
+                        self.direction = 'E'
+                    if (global_row_to_local_y_coordinate(map, self.path[1][0]) - self.y) < 0:
+                        self.y -= 1
+                    elif (global_row_to_local_y_coordinate(map, self.path[1][0]) - self.y) > 0:
+                        self.y += 1
 
     def draw_path(self, screen, path):
         for node in path:
@@ -94,14 +108,12 @@ class Character(GameObject):
                     ((next_node[1] * 80) + 40, (next_node[0] * 80) + 40),
                     3)
 
-    def find_path(self, screen, map, start_node, end_node):
-        print(self.start_node)
-        print(self.end_node)
-        start_node_not_obsticle = (map[start_node[0]][start_node[1]] not in MAP_OBSTACLES)
-        end_node_not_obsticle = (map[end_node[0]][end_node[1]] not in MAP_OBSTACLES)
+    def find_path(self, map, start_node, end_node):
+        start_node_not_obsticle = (map.map[start_node[0]][start_node[1]] not in MAP_OBSTACLES)
+        end_node_not_obsticle = (map.map[end_node[0]][end_node[1]] not in MAP_OBSTACLES)
 
         if start_node_not_obsticle and end_node_not_obsticle:
-            path = astar(map, start_node, end_node)
+            path = astar(map.map, start_node, end_node)
             if path:
                 return path
 

@@ -45,7 +45,7 @@ Cloud.generate_clouds()
 
 #  Main game loop
 while True:
-    # print(fpsClock)
+    print(fpsClock)
     for event in pygame.event.get():
         if event.type==QUIT:
             pygame.quit()
@@ -60,8 +60,7 @@ while True:
             my_character.start_node = my_character.actual_node(map)
 
             my_character.path = my_character.find_path(
-                screen,
-                map.map,
+                map,
                 my_character.start_node,
                 my_character.end_node
             )
@@ -94,7 +93,7 @@ while True:
         my_character.move(map)
 
     map.display_visible_map_surface(screen)
-    my_character.draw(screen)
+    my_character.draw(screen, map)
 
     Cloud.draw_clouds(screen)
     mini_map.draw(screen, map, my_character)
