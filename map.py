@@ -1,6 +1,6 @@
-import pygame
-import random
+import pygame, random, constants
 from help_functions import node_info
+
 
 class Map():
     grass = pygame.image.load("./img/grass.jpg")
@@ -14,7 +14,12 @@ class Map():
         self.map_columns = len(map[0])
         self.first_node_column = first_node_column
         self.first_node_row = first_node_row
-        self.whole_map_surface = pygame.Surface((self.map_columns*80, self.map_rows*80))
+
+        surface_size = (
+            self.map_columns*constants.NODE_SIZE,
+            self.map_rows*constants.NODE_SIZE
+        )
+        self.whole_map_surface = pygame.Surface(surface_size)
 
     @property
     def visible_map(self):
@@ -23,16 +28,16 @@ class Map():
         return visible_map
 
     def draw_whole_map(self):
-        visible_map_width = self.map_columns
-        map_elements_number = visible_map_width * self.map_rows
+        map_width = self.map_columns
+        map_elements_number = map_width * self.map_rows
 
         for node_number in range(map_elements_number):
             # divmod(a, b)
             # (a // b, a % b)
-            node_column, node_row = divmod(node_number, 100)
+            node_column, node_row = divmod(node_number, self.map_columns)
 
-            x = (node_column) * 80
-            y = (node_row) * 80
+            x = (node_column) * constants.NODE_SIZE
+            y = (node_row) * constants.NODE_SIZE
 
             self.whole_map_surface.blit(self.grass, (x, y))
 
@@ -44,16 +49,26 @@ class Map():
                 self.whole_map_surface.blit(self.house1, (x, y))
 
     def display_visible_map_surface(self, screen):
-        screen.blit(self.whole_map_surface,
-            (0, 0),
-            (self.first_node_column*80, self.first_node_row*80, 800, 800)
+        visible_map_rect = (
+            self.first_node_column*constants.NODE_SIZE,
+            self.first_node_row*constants.NODE_SIZE,
+            constants.screen_width,
+            constants.screen_height
         )
+        screen.blit(self.whole_map_surface, (0, 0), visible_map_rect)
 
         # draw yellow border around node that is pointed by the mouse
+
         node = node_info(pygame.mouse.get_pos())
-        rect_x = node[1] * 80
-        rect_y = node[0] * 80
-        pygame.draw.rect(screen, (255, 255, 0), (rect_x, rect_y, 80, 80), 1)
+        rect_x = node[1] * constants.NODE_SIZE
+        rect_y = node[0] * constants.NODE_SIZE
+        yellow_border_node_rect = (
+            rect_x,
+            rect_y,
+            constants.NODE_SIZE,
+            constants.NODE_SIZE
+        )
+        pygame.draw.rect(screen, (255, 255, 0), yellow_border_node_rect, 1)
 
 
 class MiniMap():
@@ -68,12 +83,22 @@ class MiniMap():
         self.character_x = self.screen_x_position + character.actual_node(map)[1]
         self.character_y = self.screen_y_position + character.actual_node(map)[0]
 
+        # whole map area
         pygame.draw.rect(
             screen,
             (100, 100, 100),
             (self.screen_x_position, self.screen_y_position, 100, 100)
         )
-        pygame.draw.rect(screen, (200, 200, 200), (self.mini_x, self.mini_y, 8, 8))
+
+        # draw visible screen rect
+        visible_screen_rect = (
+            self.mini_x,
+            self.mini_y,
+            constants.screen_width / constants.NODE_SIZE,
+            constants.screen_height / constants.NODE_SIZE
+        )
+
+        pygame.draw.rect(screen, (200, 200, 200), visible_screen_rect)
         pygame.draw.circle(
             screen,
             (200, 0, 0),

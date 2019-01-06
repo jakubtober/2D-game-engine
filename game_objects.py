@@ -1,4 +1,4 @@
-import sys, pygame, time, random
+import sys, pygame, time, random, constants
 from pygame.locals import *
 from apath import astar, MAP_OBSTACLES
 
@@ -19,8 +19,8 @@ class GameObject():
         self.img = img
 
     def actual_node(self, map):
-        actual_node_column = map.first_node_column + (self.x // 80)
-        actual_node_row = map.first_node_row + (self.y // 80)
+        actual_node_column = map.first_node_column + (self.x // constants.NODE_SIZE)
+        actual_node_row = map.first_node_row + (self.y // constants.NODE_SIZE)
         return (actual_node_row, actual_node_column)
 
     def draw(self, screen):
@@ -30,11 +30,11 @@ class GameObject():
 
 class Character(GameObject):
     def __init__(self, object_type, node_x, node_y):
-        GameObject.__init__(self, 'knight', node_x * 80, node_y * 80)
-        self.node_column = self.x // 80
-        self.node_row = self.y // 80
+        GameObject.__init__(self, 'knight', node_x * constants.NODE_SIZE, node_y * constants.NODE_SIZE)
+        self.node_column = self.x // constants.NODE_SIZE
+        self.node_row = self.y // constants.NODE_SIZE
 
-        self.start_node = (node_y // 80, node_x // 80)
+        self.start_node = (node_y // constants.NODE_SIZE, node_x // constants.NODE_SIZE)
         self.end_node = ()
 
         self.is_moving = False
@@ -46,8 +46,8 @@ class Character(GameObject):
 
     def map_node(self, map):
         return (
-            map.first_node_row + (self.y // 80),
-            map.first_node_column + (self.x // 80)
+            map.first_node_row + (self.y // constants.NODE_SIZE),
+            map.first_node_column + (self.x // constants.NODE_SIZE)
         )
 
     def draw(self, screen, map):
@@ -68,15 +68,23 @@ class Character(GameObject):
                 screen,
                 (200, 0, 0),
                 (circle_x , circle_y),
-                20,
+                constants.NODE_SIZE // 4,
                 3
             )
 
     def move(self, map):
-        end_node_x_is_self_x = (global_column_to_local_x_coordinate(map, self.end_node[1]) == self.x)
-        end_node_y_is_self_y = (global_row_to_local_y_coordinate(map, self.end_node[0]) == self.y)
-        second_path_node_x_is_self_x = (global_column_to_local_x_coordinate(map, self.path[1][1]) == self.x)
-        second_path_node_y_is_self_y = (global_row_to_local_y_coordinate(map, self.path[1][0]) == self.y)
+        end_node_x_is_self_x = (
+            global_column_to_local_x_coordinate(map, self.end_node[1]) == self.x
+        )
+        end_node_y_is_self_y = (
+            global_row_to_local_y_coordinate(map, self.end_node[0]) == self.y
+        )
+        second_path_node_x_is_self_x = (
+            global_column_to_local_x_coordinate(map, self.path[1][1]) == self.x
+        )
+        second_path_node_y_is_self_y = (
+            global_row_to_local_y_coordinate(map, self.path[1][0]) == self.y
+        )
 
         if self.is_moving:
             if end_node_x_is_self_x and end_node_y_is_self_y:
@@ -104,8 +112,8 @@ class Character(GameObject):
                 pygame.draw.line(
                     screen,
                     (255, 255, 0),
-                    ((node[1] * 80) + 40, (node[0] * 80) + 40),
-                    ((next_node[1] * 80) + 40, (next_node[0] * 80) + 40),
+                    ((node[1] * constants.NODE_SIZE) + 40, (node[0] * constants.NODE_SIZE) + 40),
+                    ((next_node[1] * constants.NODE_SIZE) + 40, (next_node[0] * constants.NODE_SIZE) + 40),
                     3)
 
     def find_path(self, map, start_node, end_node):
@@ -118,18 +126,8 @@ class Character(GameObject):
                 return path
 
     def update_map_movement_position(self, node_column_change, node_row_change):
-        self.x += 80 * (node_column_change * (-1))
-        self.y += 80 * (node_row_change * (-1))
-        # self.start_node = (
-        #     self.start_node[0] + (node_row_change * (-1)),
-        #     self.start_node[1] + (node_column_change * (-1)),
-        # )
-        # if self.is_moving:
-            # self.end_node = (
-            #     self.end_node[0] + (node_row_change * (-1)),
-            #     self.end_node[1] + (node_column_change * (-1)),
-            # )
-            # self.path = [(node[0] + (node_row_change * (-1)), node[1] + (node_column_change * (-1))) for node in self.path]
+        self.x += constants.NODE_SIZE * (node_column_change * (-1))
+        self.y += constants.NODE_SIZE * (node_row_change * (-1))
 
 
 class Cloud(GameObject):
@@ -146,7 +144,7 @@ class Cloud(GameObject):
 
     def move(self):
         self.x += 1
-        if self.x == 800:
+        if self.x == constants.screen_width:
             random.shuffle(self.cloud_images)
             self.img = self.cloud_images[random.randint(0, 3)]
             self.x = random.randint(-300, - 100)
