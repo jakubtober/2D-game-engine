@@ -2,10 +2,15 @@ import sys, pygame, time, random, constants
 from help_functions import node_info
 from pygame.locals import *
 from game_objects import GameObject, Character, Cloud
-from map import Map, MiniMap
+from map import MapTile, Map, MiniMap
 
 
-map = [random.choices([0, 1, 2, 3], [0.7, 0.01, 0.1, 0.001], k=100) for row in range(100)]
+map = [
+    random.choices(
+        [MapTile(0, False), MapTile(1, False), MapTile(2, False), MapTile(3, False)], [0.7, 0.01, 0.1, 0.001], k=100
+    )
+    for row in range(100)
+]
 map_rows = len(map)
 map_columns = len(map[0])
 
