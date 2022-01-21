@@ -117,8 +117,8 @@ class Character(GameObject):
                     3)
 
     def find_path(self, map, start_node, end_node):
-        start_node_not_obsticle = (map.map[start_node[0]][start_node[1]] not in MAP_OBSTACLES)
-        end_node_not_obsticle = (map.map[end_node[0]][end_node[1]] not in MAP_OBSTACLES)
+        start_node_not_obsticle = (map.map[start_node[0]][start_node[1]].tile_type not in MAP_OBSTACLES)
+        end_node_not_obsticle = (map.map[end_node[0]][end_node[1]].tile_type not in MAP_OBSTACLES)
 
         if start_node_not_obsticle and end_node_not_obsticle:
             path = astar(map.map, start_node, end_node)

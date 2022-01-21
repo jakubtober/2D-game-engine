@@ -71,7 +71,7 @@ def astar(maze, start, end):
                 continue
 
             # Make sure walkable terrain
-            if maze[node_position[0]][node_position[1]] in MAP_OBSTACLES:
+            if maze[node_position[0]][node_position[1]].tile_type in MAP_OBSTACLES:
                 continue
 
             # Create new node
