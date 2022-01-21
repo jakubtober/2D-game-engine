@@ -2,6 +2,12 @@ import pygame, random, constants
 from help_functions import node_info
 
 
+class MapTile():
+    def __init__(self, tile_type, is_visible):
+        self.tile_type = tile_type
+        self.is_visible = is_visible
+
+
 class Map():
     grass = pygame.image.load("./img/grass.jpg")
     rock = pygame.image.load("./img/rock.png")
@@ -41,11 +47,11 @@ class Map():
 
             self.whole_map_surface.blit(self.grass, (x, y))
 
-            if self.map[node_row][node_column] == 1:
+            if self.map[node_row][node_column].tile_type == 1:
                 self.whole_map_surface.blit(self.rock, (x, y))
-            elif self.map[node_row][node_column] == 2:
+            elif self.map[node_row][node_column].tile_type == 2:
                 self.whole_map_surface.blit(self.tree2, (x, y))
-            elif self.map[node_row][node_column] == 3:
+            elif self.map[node_row][node_column].tile_type == 3:
                 self.whole_map_surface.blit(self.house1, (x, y))
 
     def display_visible_map_surface(self, screen):
