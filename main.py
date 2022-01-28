@@ -98,7 +98,7 @@ while True:
     if my_character.is_moving:
         my_character.move(map)
         actual_character_node = my_character.actual_node(map)
-        map.update_shadow_map(actual_character_node[0], actual_character_node[1])
+        map.update_shadow_map_tile(actual_character_node[0], actual_character_node[1])
 
     map.display_visible_map_surface(screen)
     my_character.draw(screen, map)
