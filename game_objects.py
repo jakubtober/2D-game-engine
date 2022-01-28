@@ -29,7 +29,7 @@ class GameObject():
 
 
 class Character(GameObject):
-    def __init__(self, object_type, node_x, node_y):
+    def __init__(self, object_type, node_x, node_y, map):
         GameObject.__init__(self, 'knight', node_x * constants.NODE_SIZE, node_y * constants.NODE_SIZE)
         self.node_column = self.x // constants.NODE_SIZE
         self.node_row = self.y // constants.NODE_SIZE
@@ -43,12 +43,19 @@ class Character(GameObject):
 
         self.character_east = pygame.image.load('./img/knight_east.png')
         self.character_west = pygame.image.load('./img/knight_west.png')
+        self.update_map_shadow_tiles_around(map)
 
     def map_node(self, map):
         return (
             map.first_node_row + (self.y // constants.NODE_SIZE),
             map.first_node_column + (self.x // constants.NODE_SIZE)
         )
+
+    def update_map_shadow_tiles_around(self, map):
+        actual_character_node = self.actual_node(map)
+        for tile_row_to_update in range(actual_character_node[0] - 3, actual_character_node[0] + 4):
+            for tile_column_to_update in range(actual_character_node[1] - 3, actual_character_node[1] + 4):
+                map.update_shadow_map_tile(tile_row_to_update, tile_column_to_update)
 
     def draw(self, screen, map):
         if self.direction == 'E':

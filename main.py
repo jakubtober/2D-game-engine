@@ -1,7 +1,7 @@
-import sys, pygame, time, random, constants
+import sys, pygame, random, constants
 from help_functions import node_info
 from pygame.locals import *
-from game_objects import GameObject, Character, Cloud
+from game_objects import Character, Cloud
 from map import MapTile, Map, MiniMap
 
 
@@ -15,7 +15,6 @@ map_rows = len(map)
 map_columns = len(map[0])
 
 # graphic mode init
-pygame.init()
 screen = pygame.display.set_mode(constants.GAME_SCREEN_SIZE, FULLSCREEN, 32)
 
 # clock init
@@ -26,7 +25,7 @@ map = Map(map, 0, 0)
 map.draw_whole_map()
 mini_map = MiniMap(map, constants.screen_width - 100, 0)
 
-my_character = Character('knight', 5, 5)
+my_character = Character('knight', 5, 5, map)
 Cloud.generate_clouds()
 
 #  Main game loop
@@ -97,8 +96,7 @@ while True:
 
     if my_character.is_moving:
         my_character.move(map)
-        actual_character_node = my_character.actual_node(map)
-        map.update_shadow_map_tile(actual_character_node[0], actual_character_node[1])
+        my_character.update_map_shadow_tiles_around(map)
 
     map.display_visible_map_surface(screen)
     my_character.draw(screen, map)
