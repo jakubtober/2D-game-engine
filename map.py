@@ -45,14 +45,37 @@ class Map():
             x = (node_column) * constants.NODE_SIZE
             y = (node_row) * constants.NODE_SIZE
 
-            self.whole_map_surface.blit(self.grass, (x, y))
+            if self.map[node_row][node_column].is_visible:
+                self.whole_map_surface.blit(self.grass, (x, y))
 
-            if self.map[node_row][node_column].tile_type == 1:
-                self.whole_map_surface.blit(self.rock, (x, y))
-            elif self.map[node_row][node_column].tile_type == 2:
-                self.whole_map_surface.blit(self.tree2, (x, y))
-            elif self.map[node_row][node_column].tile_type == 3:
-                self.whole_map_surface.blit(self.house1, (x, y))
+                if self.map[node_row][node_column].tile_type == 1:
+                    self.whole_map_surface.blit(self.rock, (x, y))
+                elif self.map[node_row][node_column].tile_type == 2:
+                    self.whole_map_surface.blit(self.tree2, (x, y))
+                elif self.map[node_row][node_column].tile_type == 3:
+                    self.whole_map_surface.blit(self.house1, (x, y))
+            else:
+                map_shadow_tile = (
+                    x,
+                    y,
+                    constants.NODE_SIZE,
+                    constants.NODE_SIZE
+                )
+                pygame.draw.rect(self.whole_map_surface, (0, 0, 0), map_shadow_tile, 1)
+
+    def update_shadow_map_tile(self, tile_row, tile_column):
+        if not self.map[tile_row][tile_column].is_visible:
+            tile_x_coordinate = tile_column * constants.NODE_SIZE
+            tile_y_coordinate = tile_row * constants.NODE_SIZE
+
+            self.whole_map_surface.blit(self.grass, (tile_x_coordinate, tile_y_coordinate))
+
+            if self.map[tile_row][tile_column].tile_type == 1:
+                self.whole_map_surface.blit(self.rock, (tile_x_coordinate, tile_y_coordinate))
+            elif self.map[tile_row][tile_column].tile_type == 2:
+                self.whole_map_surface.blit(self.tree2, (tile_x_coordinate, tile_y_coordinate))
+            elif self.map[tile_row][tile_column].tile_type == 3:
+                self.whole_map_surface.blit(self.house1, (tile_x_coordinate, tile_y_coordinate))
 
     def display_visible_map_surface(self, screen):
         visible_map_rect = (
