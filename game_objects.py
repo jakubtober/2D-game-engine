@@ -151,7 +151,7 @@ class Cloud(GameObject):
 
     def move(self):
         self.x += 1
-        if self.x == constants.screen_width:
+        if self.x == constants.GAME_SCREEN_SIZE[0]:
             random.shuffle(self.cloud_images)
             self.img = self.cloud_images[random.randint(0, 3)]
             self.x = random.randint(-300, - 100)

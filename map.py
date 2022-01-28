@@ -81,8 +81,8 @@ class Map():
         visible_map_rect = (
             self.first_node_column*constants.NODE_SIZE,
             self.first_node_row*constants.NODE_SIZE,
-            constants.screen_width,
-            constants.screen_height
+            constants.GAME_SCREEN_SIZE[0],
+            constants.GAME_SCREEN_SIZE[1]
         )
         screen.blit(self.whole_map_surface, (0, 0), visible_map_rect)
 
@@ -123,8 +123,8 @@ class MiniMap():
         visible_screen_rect = (
             self.mini_x,
             self.mini_y,
-            constants.screen_width / constants.NODE_SIZE,
-            constants.screen_height / constants.NODE_SIZE
+            constants.GAME_SCREEN_SIZE[0] / constants.NODE_SIZE,
+            constants.GAME_SCREEN_SIZE[1] / constants.NODE_SIZE
         )
 
         pygame.draw.rect(screen, (200, 200, 200), visible_screen_rect)
