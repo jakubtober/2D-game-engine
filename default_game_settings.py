@@ -11,7 +11,7 @@ NODE_SIZE = 80
 GAME_SCREEN_SIZE = screen_info.current_w, screen_info.current_h
 FPS = 70
 
-map = [
+random_map_matrix = [
     random.choices(
         [MapTile(0, False), MapTile(1, False), MapTile(2, False), MapTile(3, False)],
         [0.7, 0.01, 0.1, 0.001],
@@ -27,7 +27,7 @@ screen = pygame.display.set_mode(GAME_SCREEN_SIZE, FULLSCREEN, 32)
 fpsClock = pygame.time.Clock()
 
 # initiate game objects
-map = Map(map, 0, 0)
+map = Map(random_map_matrix, 0, 0)
 map.draw_whole_map()
 mini_map = MiniMap(map, GAME_SCREEN_SIZE[0] - 100, 0)
 
