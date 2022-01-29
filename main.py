@@ -1,7 +1,7 @@
-import sys, pygame, time, random, constants
+import sys, pygame, random, constants
 from help_functions import node_info
 from pygame.locals import *
-from game_objects import GameObject, Character, Cloud
+from game_objects import Character, Cloud
 from map import MapTile, Map, MiniMap
 
 
@@ -15,7 +15,6 @@ map_rows = len(map)
 map_columns = len(map[0])
 
 # graphic mode init
-pygame.init()
 screen = pygame.display.set_mode(constants.GAME_SCREEN_SIZE, FULLSCREEN, 32)
 
 # clock init
@@ -24,9 +23,9 @@ fpsClock = pygame.time.Clock()
 # initiate game objects
 map = Map(map, 0, 0)
 map.draw_whole_map()
-mini_map = MiniMap(map, constants.screen_width - 100, 0)
+mini_map = MiniMap(map, constants.GAME_SCREEN_SIZE[0] - 100, 0)
 
-my_character = Character('knight', 5, 5)
+my_character = Character('knight', 5, 5, map)
 Cloud.generate_clouds()
 
 #  Main game loop
@@ -57,7 +56,7 @@ while True:
                 my_character.is_moving = True
 
         elif event.type == pygame.KEYDOWN:
-            if (event.key == pygame.K_RIGHT) or (mouse_pos[0] > constants.screen_width - 40):
+            if (event.key == pygame.K_RIGHT) or (mouse_pos[0] > constants.GAME_SCREEN_SIZE[0] - 40):
                 if map.first_node_column < map.map_columns - 10:
                     map.first_node_column += 1
                     my_character.update_map_movement_position(1, 0)
@@ -78,7 +77,7 @@ while True:
                 sys.exit()
 
         elif event.type == pygame.MOUSEMOTION:
-            if (mouse_pos[0] > constants.screen_width - 40):
+            if (mouse_pos[0] > constants.GAME_SCREEN_SIZE[0] - 40):
                 if map.first_node_column < map.map_columns - 10:
                     map.first_node_column += 1
                     my_character.update_map_movement_position(1, 0)
@@ -90,14 +89,14 @@ while True:
                 if map.first_node_row > 0:
                     map.first_node_row -= 1
                     my_character.update_map_movement_position(0, -1)
-            elif (mouse_pos[1] > constants.screen_height - 40):
+            elif (mouse_pos[1] > constants.GAME_SCREEN_SIZE[1] - 40):
                 if map.first_node_row < map.map_rows - 10:
                     map.first_node_row += 1
                     my_character.update_map_movement_position(0, 1)
 
-
     if my_character.is_moving:
         my_character.move(map)
+        my_character.update_map_shadow_tiles_around(map)
 
     map.display_visible_map_surface(screen)
     my_character.draw(screen, map)
