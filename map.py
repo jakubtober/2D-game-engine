@@ -1,5 +1,5 @@
 import pygame, random, default_game_settings
-from help_functions import node_info
+from help_functions import tile_row_and_column
 
 
 class MapTile:
@@ -96,7 +96,7 @@ class Map:
 
         # draw yellow border around node that is pointed by the mouse
 
-        node = node_info(pygame.mouse.get_pos())
+        node = tile_row_and_column(pygame.mouse.get_pos())
         rect_x = node[1] * default_game_settings.NODE_SIZE
         rect_y = node[0] * default_game_settings.NODE_SIZE
         yellow_border_node_rect = (

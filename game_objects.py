@@ -3,7 +3,7 @@ from apath import astar, MAP_OBSTACLES
 from math import sqrt
 
 from help_functions import (
-    node_info,
+    tile_row_and_column,
     global_column_to_local_x_coordinate,
     global_row_to_local_y_coordinate,
 )
@@ -48,7 +48,7 @@ class Character(GameObject):
             node_y // default_game_settings.NODE_SIZE,
             node_x // default_game_settings.NODE_SIZE,
         )
-        self.end_node = ()
+        self.path_end_tile = ()
 
         self.is_moving = False
         self.path = []
@@ -88,8 +88,8 @@ class Character(GameObject):
             screen.blit(self.character_west, (self.x, self.y))
 
         if self.is_moving:
-            circle_x = global_column_to_local_x_coordinate(map, (self.end_node[1])) + 40
-            circle_y = global_row_to_local_y_coordinate(map, (self.end_node[0])) + 40
+            circle_x = global_column_to_local_x_coordinate(map, (self.path_end_tile[1])) + 40
+            circle_y = global_row_to_local_y_coordinate(map, (self.path_end_tile[0])) + 40
 
             pygame.draw.circle(
                 screen,
@@ -101,10 +101,10 @@ class Character(GameObject):
 
     def move(self, map):
         end_node_x_is_self_x = (
-            global_column_to_local_x_coordinate(map, self.end_node[1]) == self.x
+            global_column_to_local_x_coordinate(map, self.path_end_tile[1]) == self.x
         )
         end_node_y_is_self_y = (
-            global_row_to_local_y_coordinate(map, self.end_node[0]) == self.y
+            global_row_to_local_y_coordinate(map, self.path_end_tile[0]) == self.y
         )
         second_path_node_x_is_self_x = (
             global_column_to_local_x_coordinate(map, self.path[1][1]) == self.x

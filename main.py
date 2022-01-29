@@ -1,4 +1,7 @@
-import sys, pygame
+import sys
+import pygame
+from pygame.locals import *
+
 from default_game_settings import (
     my_character,
     fpsClock,
@@ -9,8 +12,7 @@ from default_game_settings import (
     mini_map,
 )
 from game_objects import Cloud
-from help_functions import node_info
-from pygame.locals import *
+from help_functions import tile_row_and_column
 
 
 #  Main game loop
@@ -28,15 +30,15 @@ while True:
             and event.button == 1
             and not my_character.is_moving
         ):
-            clicked_node = node_info(mouse_pos)
-            my_character.end_node = (
-                clicked_node[0] + map.first_node_row,
-                clicked_node[1] + map.first_node_column,
+            clicked_map_tile_row_and_column = tile_row_and_column(mouse_pos)
+            my_character.path_end_tile = (
+                clicked_map_tile_row_and_column[0] + map.first_node_row,
+                clicked_map_tile_row_and_column[1] + map.first_node_column,
             )
             my_character.start_node = my_character.actual_node(map)
 
             my_character.path = my_character.find_path(
-                map, my_character.start_node, my_character.end_node
+                map, my_character.start_node, my_character.path_end_tile
             )
 
             if my_character.path:

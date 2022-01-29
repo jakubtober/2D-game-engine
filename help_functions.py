@@ -1,14 +1,14 @@
 import default_game_settings
 
 
-def node_info(mouse_pos):
+def tile_row_and_column(screen_coordinates: tuple) -> tuple:
     """
-    Returns node index as (node_row, node_column) giving screen display coordinates
+    Returns tile index as (tile_row, tile_column) giving screen display coordinates
     """
-    node_row = mouse_pos[1] // default_game_settings.NODE_SIZE
-    node_column = mouse_pos[0] // default_game_settings.NODE_SIZE
-    node = (node_row, node_column)
-    return node
+    tile_row = screen_coordinates[1] // default_game_settings.NODE_SIZE
+    tile_column = screen_coordinates[0] // default_game_settings.NODE_SIZE
+    tile = (tile_row, tile_column)
+    return tile
 
 
 def global_column_to_local_x_coordinate(map, global_node_column):
