@@ -1,6 +1,7 @@
 import sys, pygame, time, random, constants
 from pygame.locals import *
 from apath import astar, MAP_OBSTACLES
+from math import sqrt
 
 from help_functions import (node_info,
     global_column_to_local_x_coordinate,
@@ -55,7 +56,11 @@ class Character(GameObject):
         actual_character_node = self.actual_node(map)
         for tile_row_to_update in range(actual_character_node[0] - 3, actual_character_node[0] + 4):
             for tile_column_to_update in range(actual_character_node[1] - 3, actual_character_node[1] + 4):
-                map.update_shadow_map_tile(tile_row_to_update, tile_column_to_update)
+                distance_to_character = sqrt(
+                    (tile_row_to_update-actual_character_node[0])**2 + (tile_column_to_update-actual_character_node[1])**2
+                )
+                if distance_to_character <= 4:
+                    map.update_shadow_map_tile(tile_row_to_update, tile_column_to_update)
 
     def draw(self, screen, map):
         if self.direction == 'E':
