@@ -20,13 +20,13 @@ class GameObject:
         self.img = img
 
     def actual_node(self, map):
-        actual_node_column = map.first_node_column + (
+        actual_node_column_index = map.column_index_of_first_visible_tile + (
             self.x // default_game_settings.NODE_SIZE
         )
-        actual_node_row = map.first_node_row + (
+        actual_node_row_index = map.row_index_of_first_visible_tile + (
             self.y // default_game_settings.NODE_SIZE
         )
-        return (actual_node_row, actual_node_column)
+        return (actual_node_row_index, actual_node_column_index)
 
     def draw(self, screen):
         if self.img:
@@ -60,8 +60,8 @@ class Character(GameObject):
 
     def map_node(self, map):
         return (
-            map.first_node_row + (self.y // default_game_settings.NODE_SIZE),
-            map.first_node_column + (self.x // default_game_settings.NODE_SIZE),
+            map.row_index_of_first_visible_tile + (self.y // default_game_settings.NODE_SIZE),
+            map.column_index_of_first_visible_tile + (self.x // default_game_settings.NODE_SIZE),
         )
 
     def update_map_shadow_tiles_around(self, map):
@@ -78,7 +78,8 @@ class Character(GameObject):
                 )
                 if distance_to_character <= 4:
                     map.update_shadow_map_tile(
-                        tile_row_to_update, tile_column_to_update
+                        tile_row_to_update,
+                        tile_column_to_update,
                     )
 
     def draw(self, screen, map):
@@ -88,8 +89,12 @@ class Character(GameObject):
             screen.blit(self.character_west, (self.x, self.y))
 
         if self.is_moving:
-            circle_x = global_column_to_local_x_coordinate(map, (self.path_end_tile[1])) + 40
-            circle_y = global_row_to_local_y_coordinate(map, (self.path_end_tile[0])) + 40
+            circle_x = (
+                global_column_to_local_x_coordinate(map, (self.path_end_tile[1])) + 40
+            )
+            circle_y = (
+                global_row_to_local_y_coordinate(map, (self.path_end_tile[0])) + 40
+            )
 
             pygame.draw.circle(
                 screen,
@@ -162,14 +167,14 @@ class Character(GameObject):
 
     def find_path(self, map, start_node, end_node):
         start_node_not_obsticle = (
-            map.map[start_node[0]][start_node[1]].tile_type not in MAP_OBSTACLES
+            map.map_matrix[start_node[0]][start_node[1]].tile_type not in MAP_OBSTACLES
         )
         end_node_not_obsticle = (
-            map.map[end_node[0]][end_node[1]].tile_type not in MAP_OBSTACLES
+            map.map_matrix[end_node[0]][end_node[1]].tile_type not in MAP_OBSTACLES
         )
 
         if start_node_not_obsticle and end_node_not_obsticle:
-            path = astar(map.map, start_node, end_node)
+            path = astar(map.map_matrix, start_node, end_node)
             if path:
                 return path
 

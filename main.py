@@ -32,8 +32,10 @@ while True:
         ):
             clicked_map_tile_row_and_column = tile_row_and_column(mouse_pos)
             my_character.path_end_tile = (
-                clicked_map_tile_row_and_column[0] + map.first_node_row,
-                clicked_map_tile_row_and_column[1] + map.first_node_column,
+                clicked_map_tile_row_and_column[0]
+                + map.row_index_of_first_visible_tile,
+                clicked_map_tile_row_and_column[1]
+                + map.column_index_of_first_visible_tile,
             )
             my_character.start_node = my_character.actual_node(map)
 
@@ -48,20 +50,20 @@ while True:
             if (event.key == pygame.K_RIGHT) or (
                 mouse_pos[0] > GAME_SCREEN_SIZE[0] - 40
             ):
-                if map.first_node_column < map.map_columns - 10:
-                    map.first_node_column += 1
+                if map.column_index_of_first_visible_tile < map.map_columns - 10:
+                    map.column_index_of_first_visible_tile += 1
                     my_character.update_map_movement_position(1, 0)
             elif event.key == pygame.K_LEFT:
-                if map.first_node_column > 0:
-                    map.first_node_column -= 1
+                if map.column_index_of_first_visible_tile > 0:
+                    map.column_index_of_first_visible_tile -= 1
                     my_character.update_map_movement_position(-1, 0)
             elif event.key == pygame.K_UP:
-                if map.first_node_row > 0:
-                    map.first_node_row -= 1
+                if map.row_index_of_first_visible_tile > 0:
+                    map.row_index_of_first_visible_tile -= 1
                     my_character.update_map_movement_position(0, -1)
             elif event.key == pygame.K_DOWN:
-                if map.first_node_row < map.map_rows - 10:
-                    map.first_node_row += 1
+                if map.row_index_of_first_visible_tile < map.map_rows - 10:
+                    map.row_index_of_first_visible_tile += 1
                     my_character.update_map_movement_position(0, 1)
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
@@ -69,20 +71,20 @@ while True:
 
         elif event.type == pygame.MOUSEMOTION:
             if mouse_pos[0] > GAME_SCREEN_SIZE[0] - 40:
-                if map.first_node_column < map.map_columns - 10:
-                    map.first_node_column += 1
+                if map.column_index_of_first_visible_tile < map.map_columns - 10:
+                    map.column_index_of_first_visible_tile += 1
                     my_character.update_map_movement_position(1, 0)
             elif mouse_pos[0] < 40:
-                if map.first_node_column > 0:
-                    map.first_node_column -= 1
+                if map.column_index_of_first_visible_tile > 0:
+                    map.column_index_of_first_visible_tile -= 1
                     my_character.update_map_movement_position(-1, 0)
             elif mouse_pos[1] < 40:
-                if map.first_node_row > 0:
-                    map.first_node_row -= 1
+                if map.row_index_of_first_visible_tile > 0:
+                    map.row_index_of_first_visible_tile -= 1
                     my_character.update_map_movement_position(0, -1)
             elif mouse_pos[1] > GAME_SCREEN_SIZE[1] - 40:
-                if map.first_node_row < map.map_rows - 10:
-                    map.first_node_row += 1
+                if map.row_index_of_first_visible_tile < map.map_rows - 10:
+                    map.row_index_of_first_visible_tile += 1
                     my_character.update_map_movement_position(0, 1)
 
     if my_character.is_moving:
