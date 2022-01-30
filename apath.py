@@ -1,4 +1,4 @@
-MAP_OBSTACLES = (1, 2, 3)
+MAP_OBSTACLES = ("rock", "tree", "house")
 
 
 class Node:

@@ -60,8 +60,10 @@ class Character(GameObject):
 
     def map_node(self, map):
         return (
-            map.row_index_of_first_visible_tile + (self.y // default_game_settings.NODE_SIZE),
-            map.column_index_of_first_visible_tile + (self.x // default_game_settings.NODE_SIZE),
+            map.row_index_of_first_visible_tile
+            + (self.y // default_game_settings.NODE_SIZE),
+            map.column_index_of_first_visible_tile
+            + (self.x // default_game_settings.NODE_SIZE),
         )
 
     def update_map_shadow_tiles_around(self, map):

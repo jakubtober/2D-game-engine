@@ -13,7 +13,7 @@ FPS = 70
 
 random_map_matrix = [
     random.choices(
-        [MapTile(0, False), MapTile(1, False), MapTile(2, False), MapTile(3, False)],
+        [MapTile("grass", False), MapTile("rock", False), MapTile("tree", False), MapTile("house", False)],
         [0.7, 0.01, 0.1, 0.001],
         k=100,
     )
@@ -29,7 +29,7 @@ fpsClock = pygame.time.Clock()
 # initiate game objects
 map = Map(random_map_matrix, 0, 0)
 map.draw_whole_map()
-mini_map = MiniMap(map, GAME_SCREEN_SIZE[0] - 100, 0)
+mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 100, 0)
 
 my_character = Character("knight", 5, 5, map)
 Cloud.generate_clouds()
