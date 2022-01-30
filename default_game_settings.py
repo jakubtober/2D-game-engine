@@ -13,7 +13,12 @@ FPS = 70
 
 random_map_matrix = [
     random.choices(
-        [MapTile("grass", False), MapTile("rock", False), MapTile("tree", False), MapTile("house", False)],
+        [
+            MapTile("grass", False),
+            MapTile("rock", False),
+            MapTile("tree", False),
+            MapTile("house", False),
+        ],
         [0.7, 0.01, 0.1, 0.001],
         k=100,
     )

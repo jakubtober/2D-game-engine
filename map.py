@@ -61,11 +61,17 @@ class Map:
                 self.whole_map_surface.blit(actual_tile.bitmap["grass"], (x, y))
 
                 if actual_tile.tile_type == "rock":
-                    self.whole_map_surface.blit(actual_tile.bitmap[actual_tile.tile_type], (x, y))
+                    self.whole_map_surface.blit(
+                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
+                    )
                 elif actual_tile.tile_type == "tree":
-                    self.whole_map_surface.blit(actual_tile.bitmap[actual_tile.tile_type], (x, y))
+                    self.whole_map_surface.blit(
+                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
+                    )
                 elif actual_tile.tile_type == "house":
-                    self.whole_map_surface.blit(actual_tile.bitmap[actual_tile.tile_type], (x, y))
+                    self.whole_map_surface.blit(
+                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
+                    )
             else:
                 map_shadow_tile = (
                     x,
@@ -88,15 +94,18 @@ class Map:
 
             if actual_tile.tile_type == "rock":
                 self.whole_map_surface.blit(
-                    actual_tile.bitmap[actual_tile.tile_type], (tile_x_coordinate, tile_y_coordinate)
+                    actual_tile.bitmap[actual_tile.tile_type],
+                    (tile_x_coordinate, tile_y_coordinate),
                 )
             elif actual_tile.tile_type == "tree":
                 self.whole_map_surface.blit(
-                    actual_tile.bitmap[actual_tile.tile_type], (tile_x_coordinate, tile_y_coordinate)
+                    actual_tile.bitmap[actual_tile.tile_type],
+                    (tile_x_coordinate, tile_y_coordinate),
                 )
             elif actual_tile.tile_type == "house":
                 self.whole_map_surface.blit(
-                    actual_tile.bitmap[actual_tile.tile_type], (tile_x_coordinate, tile_y_coordinate)
+                    actual_tile.bitmap[actual_tile.tile_type],
+                    (tile_x_coordinate, tile_y_coordinate),
                 )
 
     def display_visible_map_surface(self, screen):
