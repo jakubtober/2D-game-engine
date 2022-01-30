@@ -58,7 +58,8 @@ class Map:
             actual_tile = self.map_matrix[tile_row_index][tile_column_index]
 
             if actual_tile.is_visible:
-                self.whole_map_surface.blit(actual_tile.bitmap[actual_tile.tile_type], (x, y))
+                self.whole_map_surface.blit(actual_tile.bitmap["grass"], (x, y))
+
                 if actual_tile.tile_type == "rock":
                     self.whole_map_surface.blit(actual_tile.bitmap[actual_tile.tile_type], (x, y))
                 elif actual_tile.tile_type == "tree":
@@ -82,7 +83,7 @@ class Map:
             tile_y_coordinate = tile_row_index * default_game_settings.NODE_SIZE
 
             self.whole_map_surface.blit(
-                actual_tile.bitmap[actual_tile.tile_type], (tile_x_coordinate, tile_y_coordinate)
+                actual_tile.bitmap["grass"], (tile_x_coordinate, tile_y_coordinate)
             )
 
             if actual_tile.tile_type == "rock":
