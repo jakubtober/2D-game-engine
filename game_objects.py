@@ -13,10 +13,10 @@ from help_functions import (
 
 
 class GameObject:
-    def __init__(self, x_coordinate, y_coordinate, img=None):
+    def __init__(self, x_coordinate, y_coordinate, bitmap=None):
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
-        self.img = img
+        self.bitmap = bitmap
 
     def actual_row_and_column_index(self, map):
         actual_tile_row_index = map.row_index_of_first_visible_tile + (
@@ -28,8 +28,8 @@ class GameObject:
         return (actual_tile_row_index, tile_column_index)
 
     def draw(self, screen):
-        if self.img:
-            screen.blit(self.img, (self.x_coordinate, self.y_coordinate))
+        if self.bitmap:
+            screen.blit(self.bitmap, (self.x_coordinate, self.y_coordinate))
 
 
 class Character(GameObject):
@@ -187,36 +187,36 @@ class Character(GameObject):
 
 class Cloud(GameObject):
     clouds_list = []
-    cloud_images = [
+    cloud_bitmaps = [
         pygame.image.load("./img/cloud1.png"),
         pygame.image.load("./img/cloud2.png"),
         pygame.image.load("./img/cloud3.png"),
         pygame.image.load("./img/cloud4.png"),
     ]
 
-    def __init__(self, x_coordinate, y_coordinate, img):
-        GameObject.__init__(self, x_coordinate, y_coordinate, img)
+    def __init__(self, x_coordinate, y_coordinate, bitmap):
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
 
     def move(self):
         self.x_coordinate += 1
         if self.x_coordinate == default_game_settings.GAME_SCREEN_SIZE[0]:
-            random.shuffle(self.cloud_images)
-            self.img = self.cloud_images[random.randint(0, 3)]
+            random.shuffle(self.cloud_bitmaps)
+            self.bitmap = self.cloud_bitmaps[random.randint(0, 3)]
             self.x_coordinate = random.randint(-300, -100)
             self.y_coordinate = random.randint(100, 700)
 
     def draw(self, screen):
-        screen.blit(self.img, (self.x_coordinate, self.y_coordinate))
+        screen.blit(self.bitmap, (self.x_coordinate, self.y_coordinate))
         self.move()
 
     @classmethod
     def generate_clouds(cls):
-        random.shuffle(cls.cloud_images)
+        random.shuffle(cls.cloud_bitmaps)
         for i in range(0, 4):
             cloud = cls(
                 random.randint(0, 700),
                 random.randint(0, 700),
-                cls.cloud_images[random.randint(0, 3)],
+                cls.cloud_bitmaps[random.randint(0, 3)],
             )
             cls.clouds_list.append(cloud)
 
@@ -224,3 +224,13 @@ class Cloud(GameObject):
     def draw_clouds(cls, screen):
         for cloud in cls.clouds_list:
             cloud.draw(screen)
+
+
+class House(GameObject):
+    def __init__(self, x_coordinate, y_coordinate, bitmap):
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+
+
+class Rock(GameObject):
+    def __init__(self, x_coordinate, y_coordinate, bitmap):
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
