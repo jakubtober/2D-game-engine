@@ -19,13 +19,13 @@ class GameObject:
         self.img = img
 
     def actual_row_and_column_index(self, map):
-        tile_node_column_index = map.column_index_of_first_visible_tile + (
-            self.x_coordinate // default_game_settings.NODE_SIZE
-        )
         actual_tile_row_index = map.row_index_of_first_visible_tile + (
             self.y_coordinate // default_game_settings.NODE_SIZE
         )
-        return (actual_tile_row_index, tile_node_column_index)
+        tile_column_index = map.column_index_of_first_visible_tile + (
+            self.x_coordinate // default_game_settings.NODE_SIZE
+        )
+        return (actual_tile_row_index, tile_column_index)
 
     def draw(self, screen):
         if self.img:
@@ -39,6 +39,7 @@ class Character(GameObject):
             node_x * default_game_settings.NODE_SIZE,
             node_y * default_game_settings.NODE_SIZE,
         )
+        self.map = map
         self.node_column = self.x_coordinate // default_game_settings.NODE_SIZE
         self.node_row = self.y_coordinate // default_game_settings.NODE_SIZE
 
@@ -54,18 +55,10 @@ class Character(GameObject):
 
         self.character_east = pygame.image.load("./img/knight_east.png")
         self.character_west = pygame.image.load("./img/knight_west.png")
-        self.update_map_shadow_tiles_around(map)
+        self.update_map_shadow_tiles_around()
 
-    def map_node(self, map):
-        return (
-            map.row_index_of_first_visible_tile
-            + (self.y_coordinate // default_game_settings.NODE_SIZE),
-            map.column_index_of_first_visible_tile
-            + (self.x_coordinate // default_game_settings.NODE_SIZE),
-        )
-
-    def update_map_shadow_tiles_around(self, map):
-        actual_character_tile = self.actual_row_and_column_index(map)
+    def update_map_shadow_tiles_around(self):
+        actual_character_tile = self.actual_row_and_column_index(self.map)
         for tile_row_to_update in range(
             actual_character_tile[0] - 3, actual_character_tile[0] + 4
         ):
@@ -77,12 +70,12 @@ class Character(GameObject):
                     + (tile_column_to_update - actual_character_tile[1]) ** 2
                 )
                 if distance_to_character <= 4:
-                    map.update_shadow_map_tile(
+                    self.map.update_shadow_map_tile(
                         tile_row_to_update,
                         tile_column_to_update,
                     )
 
-    def draw(self, screen, map):
+    def draw(self, screen):
         if self.direction == "E":
             screen.blit(self.character_east, (self.x_coordinate, self.y_coordinate))
         elif self.direction == "W":
@@ -90,10 +83,10 @@ class Character(GameObject):
 
         if self.is_moving:
             circle_x = (
-                global_column_to_local_x_coordinate(map, (self.path_end_tile[1])) + 40
+                global_column_to_local_x_coordinate(self.map, (self.path_end_tile[1])) + 40
             )
             circle_y = (
-                global_row_to_local_y_coordinate(map, (self.path_end_tile[0])) + 40
+                global_row_to_local_y_coordinate(self.map, (self.path_end_tile[0])) + 40
             )
 
             pygame.draw.circle(
@@ -104,18 +97,21 @@ class Character(GameObject):
                 3,
             )
 
-    def move(self, map):
+    def move(self):
         end_node_x_is_self_x = (
-            global_column_to_local_x_coordinate(map, self.path_end_tile[1]) == self.x_coordinate
+            global_column_to_local_x_coordinate(self.map, self.path_end_tile[1])
+            == self.x_coordinate
         )
         end_node_y_is_self_y = (
-            global_row_to_local_y_coordinate(map, self.path_end_tile[0]) == self.y_coordinate
+            global_row_to_local_y_coordinate(self.map, self.path_end_tile[0])
+            == self.y_coordinate
         )
         second_path_node_x_is_self_x = (
-            global_column_to_local_x_coordinate(map, self.path[1][1]) == self.x_coordinate
+            global_column_to_local_x_coordinate(self.map, self.path[1][1])
+            == self.x_coordinate
         )
         second_path_node_y_is_self_y = (
-            global_row_to_local_y_coordinate(map, self.path[1][0]) == self.y_coordinate
+            global_row_to_local_y_coordinate(self.map, self.path[1][0]) == self.y_coordinate
         )
 
         if self.is_moving:
@@ -123,31 +119,34 @@ class Character(GameObject):
                 self.is_moving = False
             else:
                 if second_path_node_x_is_self_x and second_path_node_y_is_self_y:
-                    self.path[1] = self.map_node(map)
+                    self.path[1] = self.actual_row_and_column_index(self.map)
                     self.path.pop(0)
                 else:
                     if (
-                        global_column_to_local_x_coordinate(map, self.path[1][1])
+                        global_column_to_local_x_coordinate(self.map, self.path[1][1])
                         - self.x_coordinate
                     ) < 0:
                         self.x_coordinate -= 1
                         self.direction = "W"
                     elif (
-                        global_column_to_local_x_coordinate(map, self.path[1][1])
+                        global_column_to_local_x_coordinate(self.map, self.path[1][1])
                         - self.x_coordinate
                     ) > 0:
                         self.x_coordinate += 1
                         self.direction = "E"
                     if (
-                        global_row_to_local_y_coordinate(map, self.path[1][0]) - self.y_coordinate
+                        global_row_to_local_y_coordinate(self.map, self.path[1][0])
+                        - self.y_coordinate
                     ) < 0:
                         self.y_coordinate -= 1
                     elif (
-                        global_row_to_local_y_coordinate(map, self.path[1][0]) - self.y_coordinate
+                        global_row_to_local_y_coordinate(self.map, self.path[1][0])
+                        - self.y_coordinate
                     ) > 0:
                         self.y_coordinate += 1
 
-    def draw_path(self, screen, path):
+    @staticmethod
+    def draw_path(screen, path):
         for node in path:
             if path.index(node) < (len(path) - 1):
                 next_node = path[path.index(node) + 1]
@@ -165,21 +164,24 @@ class Character(GameObject):
                     3,
                 )
 
-    def find_path(self, map, start_node, end_node):
-        start_node_not_obsticle = (
+    @staticmethod
+    def find_path(map, start_node, end_node):
+        start_node_not_obstacle = (
             map.map_matrix[start_node[0]][start_node[1]].tile_type not in MAP_OBSTACLES
         )
-        end_node_not_obsticle = (
+        end_node_not_obstacle = (
             map.map_matrix[end_node[0]][end_node[1]].tile_type not in MAP_OBSTACLES
         )
 
-        if start_node_not_obsticle and end_node_not_obsticle:
+        if start_node_not_obstacle and end_node_not_obstacle:
             path = astar(map.map_matrix, start_node, end_node)
             if path:
                 return path
 
     def update_map_movement_position(self, node_column_change, node_row_change):
-        self.x_coordinate += default_game_settings.NODE_SIZE * (node_column_change * (-1))
+        self.x_coordinate += default_game_settings.NODE_SIZE * (
+            node_column_change * (-1)
+        )
         self.y_coordinate += default_game_settings.NODE_SIZE * (node_row_change * (-1))
 
 
@@ -222,14 +224,3 @@ class Cloud(GameObject):
     def draw_clouds(cls, screen):
         for cloud in cls.clouds_list:
             cloud.draw(screen)
-
-
-class Tree(GameObject):
-    def __init__(self, x_coordinate, y_coordinate, img, age):
-        GameObject.__init__(self, x_coordinate, y_coordinate, img)
-        self.age = age
-
-
-class House(GameObject):
-    def __init__(self, x_coordinate, y_coordinate, img):
-        GameObject.__init(self, x_coordinate, y_coordinate, img)

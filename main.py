@@ -88,11 +88,11 @@ while True:
                     my_character.update_map_movement_position(0, 1)
 
     if my_character.is_moving:
-        my_character.move(map)
-        my_character.update_map_shadow_tiles_around(map)
+        my_character.move()
+        my_character.update_map_shadow_tiles_around()
 
     map.display_visible_map_surface(screen)
-    my_character.draw(screen, map)
+    my_character.draw(screen)
 
     Cloud.draw_clouds(screen)
     mini_map.draw(screen, map, my_character)

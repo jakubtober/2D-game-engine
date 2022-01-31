@@ -147,10 +147,12 @@ class MiniMap:
         )
 
         mini_map_character_x_coordinate = (
-            self.visible_screen_x_coordinate + character.actual_row_and_column_index(map)[1]
+            self.visible_screen_x_coordinate
+            + character.actual_row_and_column_index(map)[1]
         )
         mini_map_character_y_coordinate = (
-            self.visible_screen_y_coordinate + character.actual_row_and_column_index(map)[0]
+            self.visible_screen_y_coordinate
+            + character.actual_row_and_column_index(map)[0]
         )
 
         # whole map area
