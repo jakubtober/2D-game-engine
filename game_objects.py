@@ -1,48 +1,46 @@
-import pygame, random, default_game_settings
-from apath import astar, MAP_OBSTACLES
+import pygame
+import random
 from math import sqrt
 
+import default_game_settings
+from apath import astar, MAP_OBSTACLES
+
+
 from help_functions import (
-    tile_row_and_column,
     global_column_to_local_x_coordinate,
     global_row_to_local_y_coordinate,
 )
 
 
 class GameObject:
-    objects_list = []
-
-    def __init__(self, object_type, x, y, img=None):
-        self.object_type = object_type
-        self.objects_list.append(self)
-        self.x = x
-        self.y = y
+    def __init__(self, x_coordinate, y_coordinate, img=None):
+        self.x_coordinate = x_coordinate
+        self.y_coordinate = y_coordinate
         self.img = img
 
-    def actual_node(self, map):
-        actual_node_column_index = map.column_index_of_first_visible_tile + (
-            self.x // default_game_settings.NODE_SIZE
+    def actual_row_and_column_index(self, map):
+        tile_node_column_index = map.column_index_of_first_visible_tile + (
+            self.x_coordinate // default_game_settings.NODE_SIZE
         )
-        actual_node_row_index = map.row_index_of_first_visible_tile + (
-            self.y // default_game_settings.NODE_SIZE
+        actual_tile_row_index = map.row_index_of_first_visible_tile + (
+            self.y_coordinate // default_game_settings.NODE_SIZE
         )
-        return (actual_node_row_index, actual_node_column_index)
+        return (actual_tile_row_index, tile_node_column_index)
 
     def draw(self, screen):
         if self.img:
-            screen.blit(self.img, (self.x, self.y))
+            screen.blit(self.img, (self.x_coordinate, self.y_coordinate))
 
 
 class Character(GameObject):
-    def __init__(self, object_type, node_x, node_y, map):
+    def __init__(self, node_x: int, node_y: int, map):
         GameObject.__init__(
             self,
-            "knight",
             node_x * default_game_settings.NODE_SIZE,
             node_y * default_game_settings.NODE_SIZE,
         )
-        self.node_column = self.x // default_game_settings.NODE_SIZE
-        self.node_row = self.y // default_game_settings.NODE_SIZE
+        self.node_column = self.x_coordinate // default_game_settings.NODE_SIZE
+        self.node_row = self.y_coordinate // default_game_settings.NODE_SIZE
 
         self.start_node = (
             node_y // default_game_settings.NODE_SIZE,
@@ -61,22 +59,22 @@ class Character(GameObject):
     def map_node(self, map):
         return (
             map.row_index_of_first_visible_tile
-            + (self.y // default_game_settings.NODE_SIZE),
+            + (self.y_coordinate // default_game_settings.NODE_SIZE),
             map.column_index_of_first_visible_tile
-            + (self.x // default_game_settings.NODE_SIZE),
+            + (self.x_coordinate // default_game_settings.NODE_SIZE),
         )
 
     def update_map_shadow_tiles_around(self, map):
-        actual_character_node = self.actual_node(map)
+        actual_character_tile = self.actual_row_and_column_index(map)
         for tile_row_to_update in range(
-            actual_character_node[0] - 3, actual_character_node[0] + 4
+            actual_character_tile[0] - 3, actual_character_tile[0] + 4
         ):
             for tile_column_to_update in range(
-                actual_character_node[1] - 3, actual_character_node[1] + 4
+                actual_character_tile[1] - 3, actual_character_tile[1] + 4
             ):
                 distance_to_character = sqrt(
-                    (tile_row_to_update - actual_character_node[0]) ** 2
-                    + (tile_column_to_update - actual_character_node[1]) ** 2
+                    (tile_row_to_update - actual_character_tile[0]) ** 2
+                    + (tile_column_to_update - actual_character_tile[1]) ** 2
                 )
                 if distance_to_character <= 4:
                     map.update_shadow_map_tile(
@@ -86,9 +84,9 @@ class Character(GameObject):
 
     def draw(self, screen, map):
         if self.direction == "E":
-            screen.blit(self.character_east, (self.x, self.y))
+            screen.blit(self.character_east, (self.x_coordinate, self.y_coordinate))
         elif self.direction == "W":
-            screen.blit(self.character_west, (self.x, self.y))
+            screen.blit(self.character_west, (self.x_coordinate, self.y_coordinate))
 
         if self.is_moving:
             circle_x = (
@@ -108,16 +106,16 @@ class Character(GameObject):
 
     def move(self, map):
         end_node_x_is_self_x = (
-            global_column_to_local_x_coordinate(map, self.path_end_tile[1]) == self.x
+            global_column_to_local_x_coordinate(map, self.path_end_tile[1]) == self.x_coordinate
         )
         end_node_y_is_self_y = (
-            global_row_to_local_y_coordinate(map, self.path_end_tile[0]) == self.y
+            global_row_to_local_y_coordinate(map, self.path_end_tile[0]) == self.y_coordinate
         )
         second_path_node_x_is_self_x = (
-            global_column_to_local_x_coordinate(map, self.path[1][1]) == self.x
+            global_column_to_local_x_coordinate(map, self.path[1][1]) == self.x_coordinate
         )
         second_path_node_y_is_self_y = (
-            global_row_to_local_y_coordinate(map, self.path[1][0]) == self.y
+            global_row_to_local_y_coordinate(map, self.path[1][0]) == self.y_coordinate
         )
 
         if self.is_moving:
@@ -130,24 +128,24 @@ class Character(GameObject):
                 else:
                     if (
                         global_column_to_local_x_coordinate(map, self.path[1][1])
-                        - self.x
+                        - self.x_coordinate
                     ) < 0:
-                        self.x -= 1
+                        self.x_coordinate -= 1
                         self.direction = "W"
                     elif (
                         global_column_to_local_x_coordinate(map, self.path[1][1])
-                        - self.x
+                        - self.x_coordinate
                     ) > 0:
-                        self.x += 1
+                        self.x_coordinate += 1
                         self.direction = "E"
                     if (
-                        global_row_to_local_y_coordinate(map, self.path[1][0]) - self.y
+                        global_row_to_local_y_coordinate(map, self.path[1][0]) - self.y_coordinate
                     ) < 0:
-                        self.y -= 1
+                        self.y_coordinate -= 1
                     elif (
-                        global_row_to_local_y_coordinate(map, self.path[1][0]) - self.y
+                        global_row_to_local_y_coordinate(map, self.path[1][0]) - self.y_coordinate
                     ) > 0:
-                        self.y += 1
+                        self.y_coordinate += 1
 
     def draw_path(self, screen, path):
         for node in path:
@@ -181,8 +179,8 @@ class Character(GameObject):
                 return path
 
     def update_map_movement_position(self, node_column_change, node_row_change):
-        self.x += default_game_settings.NODE_SIZE * (node_column_change * (-1))
-        self.y += default_game_settings.NODE_SIZE * (node_row_change * (-1))
+        self.x_coordinate += default_game_settings.NODE_SIZE * (node_column_change * (-1))
+        self.y_coordinate += default_game_settings.NODE_SIZE * (node_row_change * (-1))
 
 
 class Cloud(GameObject):
@@ -194,19 +192,19 @@ class Cloud(GameObject):
         pygame.image.load("./img/cloud4.png"),
     ]
 
-    def __init__(self, x, y, img):
-        GameObject.__init__(self, "cloud", x, y, img)
+    def __init__(self, x_coordinate, y_coordinate, img):
+        GameObject.__init__(self, x_coordinate, y_coordinate, img)
 
     def move(self):
-        self.x += 1
-        if self.x == default_game_settings.GAME_SCREEN_SIZE[0]:
+        self.x_coordinate += 1
+        if self.x_coordinate == default_game_settings.GAME_SCREEN_SIZE[0]:
             random.shuffle(self.cloud_images)
             self.img = self.cloud_images[random.randint(0, 3)]
-            self.x = random.randint(-300, -100)
-            self.y = random.randint(100, 700)
+            self.x_coordinate = random.randint(-300, -100)
+            self.y_coordinate = random.randint(100, 700)
 
     def draw(self, screen):
-        screen.blit(self.img, (self.x, self.y))
+        screen.blit(self.img, (self.x_coordinate, self.y_coordinate))
         self.move()
 
     @classmethod
@@ -227,11 +225,11 @@ class Cloud(GameObject):
 
 
 class Tree(GameObject):
-    def __init__(self, x, y, img, age):
-        GameObject.__init__(self, "tree", x, y, img)
+    def __init__(self, x_coordinate, y_coordinate, img, age):
+        GameObject.__init__(self, x_coordinate, y_coordinate, img)
         self.age = age
 
 
 class House(GameObject):
-    def __init__(self, x, y, img):
-        GameObject.__init(self, "house", x, y, img)
+    def __init__(self, x_coordinate, y_coordinate, img):
+        GameObject.__init(self, x_coordinate, y_coordinate, img)

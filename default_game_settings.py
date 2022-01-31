@@ -1,6 +1,7 @@
 import pygame
 from pygame import *
 import random
+
 from map import Map, MapTile, MiniMap
 from game_objects import Character, Cloud
 
@@ -36,5 +37,5 @@ map = Map(random_map_matrix, 0, 0)
 map.draw_whole_map()
 mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 100, 0)
 
-my_character = Character("knight", 5, 5, map)
+my_character = Character(5, 5, map)
 Cloud.generate_clouds()
