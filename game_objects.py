@@ -83,7 +83,8 @@ class Character(GameObject):
 
         if self.is_moving:
             circle_x = (
-                global_column_to_local_x_coordinate(self.map, (self.path_end_tile[1])) + 40
+                global_column_to_local_x_coordinate(self.map, (self.path_end_tile[1]))
+                + 40
             )
             circle_y = (
                 global_row_to_local_y_coordinate(self.map, (self.path_end_tile[0])) + 40
@@ -111,7 +112,8 @@ class Character(GameObject):
             == self.x_coordinate
         )
         second_path_node_y_is_self_y = (
-            global_row_to_local_y_coordinate(self.map, self.path[1][0]) == self.y_coordinate
+            global_row_to_local_y_coordinate(self.map, self.path[1][0])
+            == self.y_coordinate
         )
 
         if self.is_moving:
