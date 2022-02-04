@@ -1,136 +1,184 @@
-import pygame, random, constants
-from help_functions import node_info
+import pygame, default_game_settings
+
+from game_objects import Character
+from help_functions import tile_row_and_column
 
 
-class MapTile():
+class MapTile:
     def __init__(self, tile_type, is_visible):
         self.tile_type = tile_type
         self.is_visible = is_visible
+        self.bitmap = {
+            "grass": pygame.image.load("./img/grass.jpg"),
+            "rock": pygame.image.load("./img/rock.png"),
+            "tree": pygame.image.load("./img/tree2.png"),
+            "house": pygame.image.load("./img/house1.png"),
+        }
 
 
-class Map():
-    grass = pygame.image.load("./img/grass.jpg")
-    rock = pygame.image.load("./img/rock.png")
-    tree2 = pygame.image.load("./img/tree2.png")
-    house1 = pygame.image.load("./img/house1.png")
-
-    def __init__(self, map, first_node_row, first_node_column):
-        self.map = map
-        self.map_rows = len(map)
-        self.map_columns = len(map[0])
-        self.first_node_column = first_node_column
-        self.first_node_row = first_node_row
+class Map:
+    def __init__(
+        self,
+        map_matrix: list,
+        row_index_of_first_visible_tile: int,
+        column_index_of_first_visible_tile: int,
+    ):
+        self.map_matrix = map_matrix
+        self.map_rows = len(map_matrix)
+        self.map_columns = len(map_matrix[0])
+        self.column_index_of_first_visible_tile = column_index_of_first_visible_tile
+        self.row_index_of_first_visible_tile = row_index_of_first_visible_tile
 
         surface_size = (
-            self.map_columns*constants.NODE_SIZE,
-            self.map_rows*constants.NODE_SIZE
+            self.map_columns * default_game_settings.NODE_SIZE,
+            self.map_rows * default_game_settings.NODE_SIZE,
         )
         self.whole_map_surface = pygame.Surface(surface_size)
 
     @property
     def visible_map(self):
-        sliced_rows = self.map[self.first_node_row:]
-        visible_map = [row[self.first_node_column:] for row in sliced_rows]
+        sliced_rows = self.map_matrix[self.row_index_of_first_visible_tile :]
+        visible_map = [
+            row[self.column_index_of_first_visible_tile :] for row in sliced_rows
+        ]
         return visible_map
 
     def draw_whole_map(self):
         map_width = self.map_columns
         map_elements_number = map_width * self.map_rows
 
-        for node_number in range(map_elements_number):
+        for tile_number in range(map_elements_number):
             # divmod(a, b)
             # (a // b, a % b)
-            node_column, node_row = divmod(node_number, self.map_columns)
+            tile_column_index, tile_row_index = divmod(tile_number, self.map_columns)
 
-            x = (node_column) * constants.NODE_SIZE
-            y = (node_row) * constants.NODE_SIZE
+            x = tile_column_index * default_game_settings.NODE_SIZE
+            y = tile_row_index * default_game_settings.NODE_SIZE
 
-            if self.map[node_row][node_column].is_visible:
-                self.whole_map_surface.blit(self.grass, (x, y))
+            actual_tile = self.map_matrix[tile_row_index][tile_column_index]
 
-                if self.map[node_row][node_column].tile_type == 1:
-                    self.whole_map_surface.blit(self.rock, (x, y))
-                elif self.map[node_row][node_column].tile_type == 2:
-                    self.whole_map_surface.blit(self.tree2, (x, y))
-                elif self.map[node_row][node_column].tile_type == 3:
-                    self.whole_map_surface.blit(self.house1, (x, y))
+            if actual_tile.is_visible:
+                self.whole_map_surface.blit(actual_tile.bitmap["grass"], (x, y))
+
+                if actual_tile.tile_type == "rock":
+                    self.whole_map_surface.blit(
+                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
+                    )
+                elif actual_tile.tile_type == "tree":
+                    self.whole_map_surface.blit(
+                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
+                    )
+                elif actual_tile.tile_type == "house":
+                    self.whole_map_surface.blit(
+                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
+                    )
             else:
                 map_shadow_tile = (
                     x,
                     y,
-                    constants.NODE_SIZE,
-                    constants.NODE_SIZE
+                    default_game_settings.NODE_SIZE,
+                    default_game_settings.NODE_SIZE,
                 )
                 pygame.draw.rect(self.whole_map_surface, (0, 0, 0), map_shadow_tile, 1)
 
-    def update_shadow_map_tile(self, tile_row, tile_column):
-        if not self.map[tile_row][tile_column].is_visible:
-            tile_x_coordinate = tile_column * constants.NODE_SIZE
-            tile_y_coordinate = tile_row * constants.NODE_SIZE
+    def update_shadow_map_tile(self, tile_row_index: int, tile_column_index: int):
+        actual_tile = self.map_matrix[tile_row_index][tile_column_index]
 
-            self.whole_map_surface.blit(self.grass, (tile_x_coordinate, tile_y_coordinate))
+        if not actual_tile.is_visible:
+            tile_x_coordinate = tile_column_index * default_game_settings.NODE_SIZE
+            tile_y_coordinate = tile_row_index * default_game_settings.NODE_SIZE
 
-            if self.map[tile_row][tile_column].tile_type == 1:
-                self.whole_map_surface.blit(self.rock, (tile_x_coordinate, tile_y_coordinate))
-            elif self.map[tile_row][tile_column].tile_type == 2:
-                self.whole_map_surface.blit(self.tree2, (tile_x_coordinate, tile_y_coordinate))
-            elif self.map[tile_row][tile_column].tile_type == 3:
-                self.whole_map_surface.blit(self.house1, (tile_x_coordinate, tile_y_coordinate))
+            self.whole_map_surface.blit(
+                actual_tile.bitmap["grass"], (tile_x_coordinate, tile_y_coordinate)
+            )
+
+            if actual_tile.tile_type == "rock":
+                self.whole_map_surface.blit(
+                    actual_tile.bitmap[actual_tile.tile_type],
+                    (tile_x_coordinate, tile_y_coordinate),
+                )
+            elif actual_tile.tile_type == "tree":
+                self.whole_map_surface.blit(
+                    actual_tile.bitmap[actual_tile.tile_type],
+                    (tile_x_coordinate, tile_y_coordinate),
+                )
+            elif actual_tile.tile_type == "house":
+                self.whole_map_surface.blit(
+                    actual_tile.bitmap[actual_tile.tile_type],
+                    (tile_x_coordinate, tile_y_coordinate),
+                )
 
     def display_visible_map_surface(self, screen):
         visible_map_rect = (
-            self.first_node_column*constants.NODE_SIZE,
-            self.first_node_row*constants.NODE_SIZE,
-            constants.GAME_SCREEN_SIZE[0],
-            constants.GAME_SCREEN_SIZE[1]
+            self.column_index_of_first_visible_tile * default_game_settings.NODE_SIZE,
+            self.row_index_of_first_visible_tile * default_game_settings.NODE_SIZE,
+            default_game_settings.GAME_SCREEN_SIZE[0],
+            default_game_settings.GAME_SCREEN_SIZE[1],
         )
         screen.blit(self.whole_map_surface, (0, 0), visible_map_rect)
 
         # draw yellow border around node that is pointed by the mouse
 
-        node = node_info(pygame.mouse.get_pos())
-        rect_x = node[1] * constants.NODE_SIZE
-        rect_y = node[0] * constants.NODE_SIZE
+        tile = tile_row_and_column(pygame.mouse.get_pos())
+        rect_x_coordinate = tile[1] * default_game_settings.NODE_SIZE
+        rect_y_coordinate = tile[0] * default_game_settings.NODE_SIZE
         yellow_border_node_rect = (
-            rect_x,
-            rect_y,
-            constants.NODE_SIZE,
-            constants.NODE_SIZE
+            rect_x_coordinate,
+            rect_y_coordinate,
+            default_game_settings.NODE_SIZE,
+            default_game_settings.NODE_SIZE,
         )
         pygame.draw.rect(screen, (255, 255, 0), yellow_border_node_rect, 1)
 
 
-class MiniMap():
-    def __init__(self, map, screen_x_position, screen_y_position):
-        self.screen_x_position = screen_x_position
-        self.screen_y_position = screen_y_position
+class MiniMap:
+    def __init__(
+        self, visible_screen_x_coordinate: int, visible_screen_y_coordinate: int
+    ):
+        self.visible_screen_x_coordinate = visible_screen_x_coordinate
+        self.visible_screen_y_coordinate = visible_screen_y_coordinate
 
-    def draw(self, screen, map, character):
-        self.mini_x = self.screen_x_position + map.first_node_column
-        self.mini_y = self.screen_y_position + map.first_node_row
+    def draw(self, screen, map: Map, character: Character):
+        mini_x_coordinate_on_visible_screen = (
+            self.visible_screen_x_coordinate + map.column_index_of_first_visible_tile
+        )
+        mini_y_coordinate_on_visible_screen = (
+            self.visible_screen_y_coordinate + map.row_index_of_first_visible_tile
+        )
 
-        self.character_x = self.screen_x_position + character.actual_node(map)[1]
-        self.character_y = self.screen_y_position + character.actual_node(map)[0]
+        mini_map_character_x_coordinate = (
+            self.visible_screen_x_coordinate
+            + character.actual_row_and_column_index(map)[1]
+        )
+        mini_map_character_y_coordinate = (
+            self.visible_screen_y_coordinate
+            + character.actual_row_and_column_index(map)[0]
+        )
 
         # whole map area
         pygame.draw.rect(
             screen,
             (100, 100, 100),
-            (self.screen_x_position, self.screen_y_position, 100, 100)
+            (
+                self.visible_screen_x_coordinate,
+                self.visible_screen_y_coordinate,
+                100,
+                100,
+            ),
         )
 
         # draw visible screen rect
         visible_screen_rect = (
-            self.mini_x,
-            self.mini_y,
-            constants.GAME_SCREEN_SIZE[0] / constants.NODE_SIZE,
-            constants.GAME_SCREEN_SIZE[1] / constants.NODE_SIZE
+            mini_x_coordinate_on_visible_screen,
+            mini_y_coordinate_on_visible_screen,
+            default_game_settings.GAME_SCREEN_SIZE[0] / default_game_settings.NODE_SIZE,
+            default_game_settings.GAME_SCREEN_SIZE[1] / default_game_settings.NODE_SIZE,
         )
 
         pygame.draw.rect(screen, (200, 200, 200), visible_screen_rect)
         pygame.draw.circle(
             screen,
             (200, 0, 0),
-            (self.character_x, self.character_y),
-            2
+            (mini_map_character_x_coordinate, mini_map_character_y_coordinate),
+            2,
         )
