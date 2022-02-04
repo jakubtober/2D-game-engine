@@ -5,7 +5,13 @@ from help_functions import tile_row_and_column
 
 
 class MapTile:
-    def __init__(self, tile_type, is_visible, background_game_object=None, fixed_tile_game_object=None):
+    def __init__(
+        self,
+        tile_type,
+        is_visible,
+        background_game_object=None,
+        fixed_tile_game_object=None,
+    ):
         self.tile_type = tile_type
         self.is_visible = is_visible
         self.background_game_object = background_game_object
@@ -58,12 +64,18 @@ class Map:
             if actual_tile.is_visible:
                 self.whole_map_surface.blit(
                     actual_tile.background_game_object.bitmap,
-                    (actual_tile.fixed_tile_game_object.x_coordinate, actual_tile.fixed_tile_game_object.y_coordinate)
+                    (
+                        actual_tile.fixed_tile_game_object.x_coordinate,
+                        actual_tile.fixed_tile_game_object.y_coordinate,
+                    ),
                 )
 
                 self.whole_map_surface.blit(
                     actual_tile.fixed_tile_game_object.bitmap,
-                    (actual_tile.fixed_tile_game_object.x_coordinate, actual_tile.fixed_tile_game_object.y_coordinate)
+                    (
+                        actual_tile.fixed_tile_game_object.x_coordinate,
+                        actual_tile.fixed_tile_game_object.y_coordinate,
+                    ),
                 )
             else:
                 map_shadow_tile = (
@@ -86,12 +98,18 @@ class Map:
 
             self.whole_map_surface.blit(
                 actual_tile.background_game_object.bitmap,
-                (actual_tile.fixed_tile_game_object.x_coordinate, actual_tile.fixed_tile_game_object.y_coordinate)
+                (
+                    actual_tile.fixed_tile_game_object.x_coordinate,
+                    actual_tile.fixed_tile_game_object.y_coordinate,
+                ),
             )
 
             self.whole_map_surface.blit(
                 actual_tile.fixed_tile_game_object.bitmap,
-                (actual_tile.fixed_tile_game_object.x_coordinate, actual_tile.fixed_tile_game_object.y_coordinate)
+                (
+                    actual_tile.fixed_tile_game_object.x_coordinate,
+                    actual_tile.fixed_tile_game_object.y_coordinate,
+                ),
             )
 
     def display_visible_map_surface(self, screen):

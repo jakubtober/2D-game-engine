@@ -229,20 +229,40 @@ class Cloud(GameObject):
 
 
 class Grass(GameObject):
-    def __init__(self, x_coordinate=None, y_coordinate=None, bitmap=pygame.image.load("./img/grass.jpg")):
+    def __init__(
+        self,
+        x_coordinate=None,
+        y_coordinate=None,
+        bitmap=pygame.image.load("./img/grass.jpg"),
+    ):
         GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
 
 
 class Tree(GameObject):
-    def __init__(self, x_coordinate=None, y_coordinate=None, bitmap=pygame.image.load("./img/tree2.png")):
+    def __init__(
+        self,
+        x_coordinate=None,
+        y_coordinate=None,
+        bitmap=pygame.image.load("./img/tree2.png"),
+    ):
         GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
 
 
 class House(GameObject):
-    def __init__(self, x_coordinate=None, y_coordinate=None, bitmap=pygame.image.load("./img/rock.png")):
+    def __init__(
+        self,
+        x_coordinate=None,
+        y_coordinate=None,
+        bitmap=pygame.image.load("./img/rock.png"),
+    ):
         GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
 
 
 class Rock(GameObject):
-    def __init__(self, x_coordinate=None, y_coordinate=None, bitmap=pygame.image.load("./img/house1.png")):
+    def __init__(
+        self,
+        x_coordinate=None,
+        y_coordinate=None,
+        bitmap=pygame.image.load("./img/house1.png"),
+    ):
         GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)

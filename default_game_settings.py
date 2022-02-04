@@ -15,10 +15,30 @@ FPS = 70
 random_map_matrix = [
     random.choices(
         [
-            MapTile("grass", False, background_game_object=Grass(), fixed_tile_game_object=Grass()),
-            MapTile("rock", False, background_game_object=Grass(), fixed_tile_game_object=Rock()),
-            MapTile("tree", False, background_game_object=Grass(), fixed_tile_game_object=Tree()),
-            MapTile("house", False, background_game_object=Grass(), fixed_tile_game_object=House()),
+            MapTile(
+                "grass",
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=Grass(),
+            ),
+            MapTile(
+                "rock",
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=Rock(),
+            ),
+            MapTile(
+                "tree",
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=Tree(),
+            ),
+            MapTile(
+                "house",
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=House(),
+            ),
         ],
         [0.7, 0.01, 0.1, 0.001],
         k=100,
