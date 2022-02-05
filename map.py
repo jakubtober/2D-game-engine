@@ -7,12 +7,12 @@ from help_functions import tile_row_and_column
 class MapTile:
     def __init__(
         self,
-        tile_type,
-        is_visible,
+        is_possible_to_cross: bool,
+        is_visible: bool,
         background_game_object=None,
         fixed_tile_game_object=None,
     ):
-        self.tile_type = tile_type
+        self.is_possible_to_cross = is_possible_to_cross
         self.is_visible = is_visible
         self.background_game_object = background_game_object
         self.fixed_tile_game_object = fixed_tile_game_object

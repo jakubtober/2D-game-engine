@@ -167,16 +167,16 @@ class Character(GameObject):
                 )
 
     @staticmethod
-    def find_path(map, start_node, end_node):
-        start_node_not_obstacle = (
-            map.map_matrix[start_node[0]][start_node[1]].tile_type not in MAP_OBSTACLES
+    def find_path(map, start_tile, end_tile):
+        start_tile_not_obstacle = (
+            map.map_matrix[start_tile[0]][start_tile[1]].is_possible_to_cross
         )
-        end_node_not_obstacle = (
-            map.map_matrix[end_node[0]][end_node[1]].tile_type not in MAP_OBSTACLES
+        end_tile_not_obstacle = (
+            map.map_matrix[end_tile[0]][end_tile[1]].is_possible_to_cross
         )
 
-        if start_node_not_obstacle and end_node_not_obstacle:
-            path = astar(map.map_matrix, start_node, end_node)
+        if start_tile_not_obstacle and end_tile_not_obstacle:
+            path = astar(map.map_matrix, start_tile, end_tile)
             if path:
                 return path
 

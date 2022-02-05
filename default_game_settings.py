@@ -16,25 +16,25 @@ random_map_matrix = [
     random.choices(
         [
             MapTile(
-                "grass",
+                True,
                 False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Grass(),
             ),
             MapTile(
-                "rock",
+                False,
                 False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Rock(),
             ),
             MapTile(
-                "tree",
+                False,
                 False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Tree(),
             ),
             MapTile(
-                "house",
+                False,
                 False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=House(),
