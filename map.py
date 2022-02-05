@@ -5,15 +5,17 @@ from help_functions import tile_row_and_column
 
 
 class MapTile:
-    def __init__(self, tile_type, is_visible):
-        self.tile_type = tile_type
+    def __init__(
+        self,
+        is_possible_to_cross: bool,
+        is_visible: bool,
+        background_game_object=None,
+        fixed_tile_game_object=None,
+    ):
+        self.is_possible_to_cross = is_possible_to_cross
         self.is_visible = is_visible
-        self.bitmap = {
-            "grass": pygame.image.load("./img/grass.jpg"),
-            "rock": pygame.image.load("./img/rock.png"),
-            "tree": pygame.image.load("./img/tree2.png"),
-            "house": pygame.image.load("./img/house1.png"),
-        }
+        self.background_game_object = background_game_object
+        self.fixed_tile_game_object = fixed_tile_game_object
 
 
 class Map:
@@ -56,22 +58,25 @@ class Map:
             y = tile_row_index * default_game_settings.NODE_SIZE
 
             actual_tile = self.map_matrix[tile_row_index][tile_column_index]
+            actual_tile.fixed_tile_game_object.x_coordinate = x
+            actual_tile.fixed_tile_game_object.y_coordinate = y
 
             if actual_tile.is_visible:
-                self.whole_map_surface.blit(actual_tile.bitmap["grass"], (x, y))
+                self.whole_map_surface.blit(
+                    actual_tile.background_game_object.bitmap,
+                    (
+                        actual_tile.fixed_tile_game_object.x_coordinate,
+                        actual_tile.fixed_tile_game_object.y_coordinate,
+                    ),
+                )
 
-                if actual_tile.tile_type == "rock":
-                    self.whole_map_surface.blit(
-                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
-                    )
-                elif actual_tile.tile_type == "tree":
-                    self.whole_map_surface.blit(
-                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
-                    )
-                elif actual_tile.tile_type == "house":
-                    self.whole_map_surface.blit(
-                        actual_tile.bitmap[actual_tile.tile_type], (x, y)
-                    )
+                self.whole_map_surface.blit(
+                    actual_tile.fixed_tile_game_object.bitmap,
+                    (
+                        actual_tile.fixed_tile_game_object.x_coordinate,
+                        actual_tile.fixed_tile_game_object.y_coordinate,
+                    ),
+                )
             else:
                 map_shadow_tile = (
                     x,
@@ -85,28 +90,27 @@ class Map:
         actual_tile = self.map_matrix[tile_row_index][tile_column_index]
 
         if not actual_tile.is_visible:
-            tile_x_coordinate = tile_column_index * default_game_settings.NODE_SIZE
-            tile_y_coordinate = tile_row_index * default_game_settings.NODE_SIZE
+            x = tile_column_index * default_game_settings.NODE_SIZE
+            y = tile_row_index * default_game_settings.NODE_SIZE
+
+            actual_tile.fixed_tile_game_object.x_coordinate = x
+            actual_tile.fixed_tile_game_object.y_coordinate = y
 
             self.whole_map_surface.blit(
-                actual_tile.bitmap["grass"], (tile_x_coordinate, tile_y_coordinate)
+                actual_tile.background_game_object.bitmap,
+                (
+                    actual_tile.fixed_tile_game_object.x_coordinate,
+                    actual_tile.fixed_tile_game_object.y_coordinate,
+                ),
             )
 
-            if actual_tile.tile_type == "rock":
-                self.whole_map_surface.blit(
-                    actual_tile.bitmap[actual_tile.tile_type],
-                    (tile_x_coordinate, tile_y_coordinate),
-                )
-            elif actual_tile.tile_type == "tree":
-                self.whole_map_surface.blit(
-                    actual_tile.bitmap[actual_tile.tile_type],
-                    (tile_x_coordinate, tile_y_coordinate),
-                )
-            elif actual_tile.tile_type == "house":
-                self.whole_map_surface.blit(
-                    actual_tile.bitmap[actual_tile.tile_type],
-                    (tile_x_coordinate, tile_y_coordinate),
-                )
+            self.whole_map_surface.blit(
+                actual_tile.fixed_tile_game_object.bitmap,
+                (
+                    actual_tile.fixed_tile_game_object.x_coordinate,
+                    actual_tile.fixed_tile_game_object.y_coordinate,
+                ),
+            )
 
     def display_visible_map_surface(self, screen):
         visible_map_rect = (

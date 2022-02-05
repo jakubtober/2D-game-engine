@@ -3,7 +3,7 @@ from pygame import *
 import random
 
 from map import Map, MapTile, MiniMap
-from game_objects import Character, Cloud
+from game_objects import Character, Cloud, Grass, Tree, House, Rock
 
 pygame.init()
 screen_info = pygame.display.Info()
@@ -15,12 +15,32 @@ FPS = 70
 random_map_matrix = [
     random.choices(
         [
-            MapTile("grass", False),
-            MapTile("rock", False),
-            MapTile("tree", False),
-            MapTile("house", False),
+            MapTile(
+                True,
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=Grass(),
+            ),
+            MapTile(
+                False,
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=Rock(),
+            ),
+            MapTile(
+                False,
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=Tree(),
+            ),
+            MapTile(
+                False,
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=House(),
+            ),
         ],
-        [0.7, 0.01, 0.1, 0.001],
+        [0.7, 0.05, 0.1, 0.001],
         k=100,
     )
     for row in range(100)
