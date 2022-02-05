@@ -37,10 +37,10 @@ while True:
                 clicked_map_tile_row_and_column[1]
                 + map.column_index_of_first_visible_tile,
             )
-            my_character.start_node = my_character.actual_row_and_column_index(map)
+            my_character.start_tile = my_character.actual_row_and_column_index(map)
 
             my_character.path = my_character.find_path(
-                map, my_character.start_node, my_character.path_end_tile
+                map, my_character.start_tile, my_character.path_end_tile
             )
 
             if my_character.path:
