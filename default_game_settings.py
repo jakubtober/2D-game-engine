@@ -40,7 +40,7 @@ random_map_matrix = [
                 fixed_tile_game_object=House(),
             ),
         ],
-        [0.7, 0.01, 0.1, 0.001],
+        [0.7, 0.05, 0.1, 0.001],
         k=100,
     )
     for row in range(100)
