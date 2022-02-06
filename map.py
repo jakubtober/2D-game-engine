@@ -31,11 +31,11 @@ class Map:
         self.column_index_of_first_visible_tile = column_index_of_first_visible_tile
         self.row_index_of_first_visible_tile = row_index_of_first_visible_tile
 
-        surface_size = (
+        self.surface_size = (
             self.map_columns * default_game_settings.NODE_SIZE,
             self.map_rows * default_game_settings.NODE_SIZE,
         )
-        self.whole_map_surface = pygame.Surface(surface_size)
+        self.whole_map_surface = pygame.Surface(self.surface_size)
 
     @property
     def visible_map(self):
@@ -162,13 +162,26 @@ class MiniMap:
         minimap_border_rect = (
             self.visible_screen_x_coordinate - 1,
             self.visible_screen_y_coordinate - 1,
-            self.visible_screen_x_coordinate + 102,
-            self.visible_screen_y_coordinate + 102,
+            self.visible_screen_x_coordinate
+            + (map.surface_size[0] / default_game_settings.NODE_SIZE)
+            + 1,
+            self.visible_screen_y_coordinate
+            + (map.surface_size[1] / default_game_settings.NODE_SIZE)
+            + 1,
         )
         pygame.draw.rect(screen, (255, 255, 255), minimap_border_rect, 1)
 
-        mini_map_rect = pygame.transform.scale(map.whole_map_surface, (100, 100))
-        screen.blit(mini_map_rect, (self.visible_screen_x_coordinate, self.visible_screen_y_coordinate))
+        mini_map_rect = pygame.transform.scale(
+            map.whole_map_surface,
+            (
+                map.surface_size[0] / default_game_settings.NODE_SIZE,
+                map.surface_size[1] / default_game_settings.NODE_SIZE,
+            ),
+        )
+        screen.blit(
+            mini_map_rect,
+            (self.visible_screen_x_coordinate, self.visible_screen_y_coordinate),
+        )
 
         # draw visible screen rect
         visible_screen_rect = (
