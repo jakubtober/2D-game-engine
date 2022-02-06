@@ -247,7 +247,7 @@ class Tree(GameObject):
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/tree2.png"),
+        bitmap=pygame.image.load("./img/tree3.png"),
     ):
         GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
 
