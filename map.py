@@ -159,18 +159,6 @@ class MiniMap:
             + character.actual_row_and_column_index(map)[0]
         )
 
-        minimap_border_rect = (
-            self.visible_screen_x_coordinate - 1,
-            self.visible_screen_y_coordinate - 1,
-            self.visible_screen_x_coordinate
-            + (map.surface_size[0] / default_game_settings.NODE_SIZE)
-            + 1,
-            self.visible_screen_y_coordinate
-            + (map.surface_size[1] / default_game_settings.NODE_SIZE)
-            + 1,
-        )
-        pygame.draw.rect(screen, (255, 255, 255), minimap_border_rect, 1)
-
         mini_map_rect = pygame.transform.scale(
             map.whole_map_surface,
             (
@@ -178,10 +166,19 @@ class MiniMap:
                 map.surface_size[1] / default_game_settings.NODE_SIZE,
             ),
         )
+
         screen.blit(
             mini_map_rect,
             (self.visible_screen_x_coordinate, self.visible_screen_y_coordinate),
         )
+
+        minimap_border_rect = (
+            self.visible_screen_x_coordinate,
+            self.visible_screen_y_coordinate,
+            (map.surface_size[0] / default_game_settings.NODE_SIZE),
+            (map.surface_size[1] / default_game_settings.NODE_SIZE),
+        )
+        pygame.draw.rect(screen, (255, 255, 255), minimap_border_rect, 1)
 
         # draw visible screen rect
         visible_screen_rect = (
