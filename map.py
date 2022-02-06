@@ -199,6 +199,3 @@ class MiniMap:
             (mini_map_character_x_coordinate, mini_map_character_y_coordinate),
             2,
         )
-
-    def update(self, screen, map: Map, character: Character):
-        pass
