@@ -55,7 +55,7 @@ fpsClock = pygame.time.Clock()
 # initiate game objects
 map = Map(random_map_matrix, 0, 0)
 map.draw_whole_map()
-mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 100, 0)
+mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 
 my_character = Character(5, 5, map)
 Cloud.generate_clouds()

@@ -77,9 +77,13 @@ class Character(GameObject):
 
     def draw(self, screen):
         if self.direction == "E":
-            screen.blit(self.character_east_bitmap, (self.x_coordinate, self.y_coordinate))
+            screen.blit(
+                self.character_east_bitmap, (self.x_coordinate, self.y_coordinate)
+            )
         elif self.direction == "W":
-            screen.blit(self.character_west_bitmap, (self.x_coordinate, self.y_coordinate))
+            screen.blit(
+                self.character_west_bitmap, (self.x_coordinate, self.y_coordinate)
+            )
 
         if self.is_moving:
             circle_x = (
@@ -168,12 +172,12 @@ class Character(GameObject):
 
     @staticmethod
     def find_path(map, start_tile, end_tile):
-        start_tile_not_obstacle = (
-            map.map_matrix[start_tile[0]][start_tile[1]].is_possible_to_cross
-        )
-        end_tile_not_obstacle = (
-            map.map_matrix[end_tile[0]][end_tile[1]].is_possible_to_cross
-        )
+        start_tile_not_obstacle = map.map_matrix[start_tile[0]][
+            start_tile[1]
+        ].is_possible_to_cross
+        end_tile_not_obstacle = map.map_matrix[end_tile[0]][
+            end_tile[1]
+        ].is_possible_to_cross
 
         if start_tile_not_obstacle and end_tile_not_obstacle:
             path = astar(map.map_matrix, start_tile, end_tile)
