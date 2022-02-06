@@ -159,17 +159,16 @@ class MiniMap:
             + character.actual_row_and_column_index(map)[0]
         )
 
-        # whole map area
-        pygame.draw.rect(
-            screen,
-            (100, 100, 100),
-            (
-                self.visible_screen_x_coordinate,
-                self.visible_screen_y_coordinate,
-                100,
-                100,
-            ),
+        minimap_border_rect = (
+            self.visible_screen_x_coordinate - 1,
+            self.visible_screen_y_coordinate - 1,
+            self.visible_screen_x_coordinate + 102,
+            self.visible_screen_y_coordinate + 102,
         )
+        pygame.draw.rect(screen, (255, 255, 255), minimap_border_rect, 1)
+
+        mini_map_rect = pygame.transform.scale(map.whole_map_surface, (100, 100))
+        screen.blit(mini_map_rect, (self.visible_screen_x_coordinate, self.visible_screen_y_coordinate))
 
         # draw visible screen rect
         visible_screen_rect = (
@@ -180,29 +179,6 @@ class MiniMap:
         )
 
         pygame.draw.rect(screen, (200, 200, 200), visible_screen_rect)
-
-        # draw shadow on the minimap
-        map_width = len(map.map_matrix[0])
-        map_elements_number = map_width * len(map.map_matrix)
-
-        for tile_number in range(map_elements_number):
-            # divmod(a, b)
-            # (a // b, a % b)
-            tile_column_index, tile_row_index = divmod(tile_number, len(map.map_matrix[0]))
-
-            x = tile_column_index * default_game_settings.NODE_SIZE
-            y = tile_row_index * default_game_settings.NODE_SIZE
-
-            actual_tile = map.map_matrix[tile_row_index][tile_column_index]
-
-            if actual_tile.is_visible:
-                shadow_mini_tile_rect = (
-                    self.visible_screen_x_coordinate + tile_column_index,
-                    self.visible_screen_x_coordinate + tile_row_index,
-                    default_game_settings.NODE_SIZE,
-                    default_game_settings.NODE_SIZE,
-                )
-                pygame.draw.rect(screen, (50, 50, 50), shadow_mini_tile_rect)
 
         pygame.draw.circle(
             screen,
