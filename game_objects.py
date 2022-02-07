@@ -52,9 +52,19 @@ class Character(GameObject):
         self.is_moving = False
         self.path = []
         self.direction = "E"
+        self.fps_counter = 0
+        self.image_index = 0
 
-        self.character_east_bitmap = pygame.image.load("./img/knight_east.png")
-        self.character_west_bitmap = pygame.image.load("./img/knight_west.png")
+        self.character_east_bitmap = [
+            pygame.image.load("./img/character_e/character_e1.png"),
+            pygame.image.load("./img/character_e/character_e2.png"),
+            pygame.image.load("./img/character_e/character_e3.png"),
+        ]
+        self.character_west_bitmap = [
+            pygame.image.load("./img/character_w/character_w1.png"),
+            pygame.image.load("./img/character_w/character_w2.png"),
+            pygame.image.load("./img/character_w/character_w3.png"),
+        ]
         self.update_map_shadow_tiles_around()
 
     def update_map_shadow_tiles_around(self):
@@ -76,16 +86,26 @@ class Character(GameObject):
                     )
 
     def draw(self, screen):
-        if self.direction == "E":
-            screen.blit(
-                self.character_east_bitmap, (self.x_coordinate, self.y_coordinate)
-            )
-        elif self.direction == "W":
-            screen.blit(
-                self.character_west_bitmap, (self.x_coordinate, self.y_coordinate)
-            )
-
         if self.is_moving:
+            self.fps_counter += 1
+
+            if self.fps_counter > 10:
+                self.image_index += 1
+
+                if self.image_index == len(self.character_east_bitmap):
+                    self.image_index = 0
+
+                self.fps_counter = 0
+
+            if self.direction == "E":
+                screen.blit(
+                    self.character_east_bitmap[self.image_index], (self.x_coordinate, self.y_coordinate)
+                )
+            elif self.direction == "W":
+                screen.blit(
+                    self.character_west_bitmap[self.image_index], (self.x_coordinate, self.y_coordinate)
+                )
+
             circle_x = (
                 global_column_to_local_x_coordinate(self.map, (self.path_end_tile[1]))
                 + 40
@@ -101,6 +121,15 @@ class Character(GameObject):
                 default_game_settings.NODE_SIZE // 4,
                 3,
             )
+        else:
+            if self.direction == "E":
+                screen.blit(
+                    self.character_east_bitmap[0], (self.x_coordinate, self.y_coordinate)
+                )
+            elif self.direction == "W":
+                screen.blit(
+                    self.character_west_bitmap[0], (self.x_coordinate, self.y_coordinate)
+                )
 
     def move(self):
         end_tile_x_is_self_x = (
