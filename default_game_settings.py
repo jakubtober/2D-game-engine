@@ -3,7 +3,7 @@ from pygame import *
 import random
 
 from map import Map, MapTile, MiniMap
-from game_objects import Character, Cloud, Grass, Tree, House, Rock
+from game_objects import Character, Cloud, Grass, Tree, PineTree, OldTree, PieceOfWood, Rock, Bushes1
 
 pygame.init()
 screen_info = pygame.display.Info()
@@ -37,10 +37,28 @@ random_map_matrix = [
                 False,
                 False,
                 background_game_object=Grass(),
-                fixed_tile_game_object=House(),
+                fixed_tile_game_object=OldTree(),
+            ),
+            MapTile(
+                False,
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=PineTree(),
+            ),
+            MapTile(
+                False,
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=PieceOfWood(),
+            ),
+            MapTile(
+                False,
+                False,
+                background_game_object=Grass(),
+                fixed_tile_game_object=Bushes1(),
             ),
         ],
-        [0.7, 0.05, 0.1, 0.001],
+        [0.5, 0.03, 0.05, 0.05, 0.05, 0.005, 0.01],
         k=100,
     )
     for row in range(100)

@@ -252,12 +252,41 @@ class Tree(GameObject):
         GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
 
 
-class House(GameObject):
+class PineTree(GameObject):
+    def __init__(
+            self,
+            x_coordinate=None,
+            y_coordinate=None,
+            bitmap=pygame.image.load("./img/tree2.png"),
+    ):
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+
+
+class OldTree(GameObject):
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/rock.png"),
+        bitmap=pygame.image.load("./img/tree4.png"),
+    ):
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+
+
+class PieceOfWood(GameObject):
+    def __init__(
+        self,
+        x_coordinate=None,
+        y_coordinate=None,
+        bitmap=pygame.image.load("./img/piece_of_wood.png"),
+    ):
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+
+class Bushes1(GameObject):
+    def __init__(
+        self,
+        x_coordinate=None,
+        y_coordinate=None,
+        bitmap=pygame.image.load("./img/bushes1.png"),
     ):
         GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
 
@@ -267,6 +296,6 @@ class Rock(GameObject):
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/house1.png"),
+        bitmap=pygame.image.load("./img/rock.png"),
     ):
         GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
