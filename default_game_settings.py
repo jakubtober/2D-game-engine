@@ -3,7 +3,18 @@ from pygame import *
 import random
 
 from map import Map, MapTile, MiniMap
-from game_objects import Character, Cloud, Grass, Tree, PineTree, OldTree, PieceOfWood, Rock, Bushes1
+from game_objects import (
+    Character,
+    Bird1,
+    Cloud,
+    Grass,
+    Tree,
+    PineTree,
+    OldTree,
+    PieceOfWood,
+    Rock,
+    Bushes1,
+)
 
 pygame.init()
 screen_info = pygame.display.Info()
@@ -76,9 +87,16 @@ map.draw_whole_map()
 mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 
 my_character = Character(5, 5, map)
+my_character.update_map_shadow_tiles_around()
+
+bird1 = Bird1(10, 3, map)
 
 clouds = [
-    Cloud(random.randint(0, 700), random.randint(0, 700), [random.choice(Cloud.cloud_bitmaps)])
+    Cloud(
+        random.randint(0, 700),
+        random.randint(0, 700),
+        [random.choice(Cloud.cloud_bitmaps)],
+    )
     for _ in range(0, 4)
 ]
 print(clouds[0].bitmaps)
