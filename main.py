@@ -9,7 +9,7 @@ from default_game_settings import (
     GAME_SCREEN_SIZE,
     map,
     screen,
-    mini_map,
+    mini_map, clouds,
 )
 from game_objects import Cloud
 from help_functions import tile_row_and_column
@@ -94,7 +94,8 @@ while True:
     map.display_visible_map_surface(screen)
     my_character.draw(screen)
 
-    Cloud.draw_clouds(screen)
+    for cloud in clouds:
+        cloud.draw(screen)
     mini_map.draw(screen, map, my_character)
 
     pygame.display.update()

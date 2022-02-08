@@ -76,4 +76,9 @@ map.draw_whole_map()
 mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 
 my_character = Character(5, 5, map)
-Cloud.generate_clouds()
+
+clouds = [
+    Cloud(random.randint(0, 700), random.randint(0, 700), [random.choice(Cloud.cloud_bitmaps)])
+    for _ in range(0, 4)
+]
+print(clouds[0].bitmaps)

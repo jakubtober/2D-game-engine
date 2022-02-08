@@ -97,7 +97,7 @@ class Map:
             actual_tile.fixed_tile_game_object.y_coordinate = y
 
             self.whole_map_surface.blit(
-                actual_tile.background_game_object.bitmap,
+                actual_tile.background_game_object.bitmaps[0],
                 (
                     actual_tile.fixed_tile_game_object.x_coordinate,
                     actual_tile.fixed_tile_game_object.y_coordinate,
@@ -105,7 +105,7 @@ class Map:
             )
 
             self.whole_map_surface.blit(
-                actual_tile.fixed_tile_game_object.bitmap,
+                actual_tile.fixed_tile_game_object.bitmaps[0],
                 (
                     actual_tile.fixed_tile_game_object.x_coordinate,
                     actual_tile.fixed_tile_game_object.y_coordinate,

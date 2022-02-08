@@ -3,7 +3,7 @@ import random
 from math import sqrt
 
 import default_game_settings
-from apath import astar, MAP_OBSTACLES
+from apath import astar
 
 
 from help_functions import (
@@ -13,10 +13,12 @@ from help_functions import (
 
 
 class GameObject:
-    def __init__(self, x_coordinate=None, y_coordinate=None, bitmap=None):
+    def __init__(self, x_coordinate=None, y_coordinate=None, bitmaps=[]):
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
-        self.bitmap = bitmap
+        self.bitmaps = bitmaps
+        self.fps_counter = 0
+        self.bitmap_index = 0
 
     def actual_row_and_column_index(self, map):
         actual_tile_row_index = map.row_index_of_first_visible_tile + (
@@ -25,11 +27,19 @@ class GameObject:
         tile_column_index = map.column_index_of_first_visible_tile + (
             self.x_coordinate // default_game_settings.NODE_SIZE
         )
-        return (actual_tile_row_index, tile_column_index)
+        return actual_tile_row_index, tile_column_index
 
-    def draw(self, screen):
-        if self.bitmap:
-            screen.blit(self.bitmap, (self.x_coordinate, self.y_coordinate))
+    def animate_bitmaps(self):
+        if self.fps_counter >= 10:
+            self.fps_counter = 0
+
+            if self.bitmap_index < (len(self.bitmaps) - 1):
+                self.bitmap_index += 1
+            else:
+                self.bitmap_index = 0
+
+        self.fps_counter += 1
+        return self.bitmap_index
 
 
 class Character(GameObject):
@@ -52,19 +62,18 @@ class Character(GameObject):
         self.is_moving = False
         self.path = []
         self.direction = "E"
-        self.fps_counter = 0
-        self.image_index = 0
 
-        self.character_east_bitmap = [
+        self.character_east_bitmaps = [
             pygame.image.load("./img/character_e/character_e1.png"),
             pygame.image.load("./img/character_e/character_e2.png"),
             pygame.image.load("./img/character_e/character_e3.png"),
         ]
-        self.character_west_bitmap = [
+        self.character_west_bitmaps = [
             pygame.image.load("./img/character_w/character_w1.png"),
             pygame.image.load("./img/character_w/character_w2.png"),
             pygame.image.load("./img/character_w/character_w3.png"),
         ]
+        self.bitmaps = self.character_east_bitmaps
         self.update_map_shadow_tiles_around()
 
     def update_map_shadow_tiles_around(self):
@@ -87,23 +96,13 @@ class Character(GameObject):
 
     def draw(self, screen):
         if self.is_moving:
-            self.fps_counter += 1
-
-            if self.fps_counter > 10:
-                self.image_index += 1
-
-                if self.image_index == len(self.character_east_bitmap):
-                    self.image_index = 0
-
-                self.fps_counter = 0
-
             if self.direction == "E":
                 screen.blit(
-                    self.character_east_bitmap[self.image_index], (self.x_coordinate, self.y_coordinate)
+                    self.character_east_bitmaps[self.bitmap_index], (self.x_coordinate, self.y_coordinate)
                 )
             elif self.direction == "W":
                 screen.blit(
-                    self.character_west_bitmap[self.image_index], (self.x_coordinate, self.y_coordinate)
+                    self.character_west_bitmaps[self.bitmap_index], (self.x_coordinate, self.y_coordinate)
                 )
 
             circle_x = (
@@ -121,14 +120,15 @@ class Character(GameObject):
                 default_game_settings.NODE_SIZE // 4,
                 3,
             )
+            self.animate_bitmaps()
         else:
             if self.direction == "E":
                 screen.blit(
-                    self.character_east_bitmap[0], (self.x_coordinate, self.y_coordinate)
+                    self.character_east_bitmaps[0], (self.x_coordinate, self.y_coordinate)
                 )
             elif self.direction == "W":
                 screen.blit(
-                    self.character_west_bitmap[0], (self.x_coordinate, self.y_coordinate)
+                    self.character_west_bitmaps[0], (self.x_coordinate, self.y_coordinate)
                 )
 
     def move(self):
@@ -221,7 +221,6 @@ class Character(GameObject):
 
 
 class Cloud(GameObject):
-    clouds_list = []
     cloud_bitmaps = [
         pygame.image.load("./img/cloud1.png"),
         pygame.image.load("./img/cloud2.png"),
@@ -229,36 +228,20 @@ class Cloud(GameObject):
         pygame.image.load("./img/cloud4.png"),
     ]
 
-    def __init__(self, x_coordinate, y_coordinate, bitmap):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+    def __init__(self, x_coordinate, y_coordinate, bitmaps):
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
 
     def move(self):
         self.x_coordinate += 1
         if self.x_coordinate == default_game_settings.GAME_SCREEN_SIZE[0]:
             random.shuffle(self.cloud_bitmaps)
-            self.bitmap = self.cloud_bitmaps[random.randint(0, 3)]
+            self.bitmaps = [self.cloud_bitmaps[random.randint(0, 3)]]
             self.x_coordinate = random.randint(-300, -100)
             self.y_coordinate = random.randint(100, 700)
 
     def draw(self, screen):
-        screen.blit(self.bitmap, (self.x_coordinate, self.y_coordinate))
+        screen.blit(self.bitmaps[0], (self.x_coordinate, self.y_coordinate))
         self.move()
-
-    @classmethod
-    def generate_clouds(cls):
-        random.shuffle(cls.cloud_bitmaps)
-        for i in range(0, 4):
-            cloud = cls(
-                random.randint(0, 700),
-                random.randint(0, 700),
-                cls.cloud_bitmaps[random.randint(0, 3)],
-            )
-            cls.clouds_list.append(cloud)
-
-    @classmethod
-    def draw_clouds(cls, screen):
-        for cloud in cls.clouds_list:
-            cloud.draw(screen)
 
 
 class Grass(GameObject):
@@ -266,9 +249,9 @@ class Grass(GameObject):
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/grass.jpg"),
+        bitmaps=[pygame.image.load("./img/grass.jpg")],
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
 
 
 class Tree(GameObject):
@@ -276,9 +259,9 @@ class Tree(GameObject):
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/tree3.png"),
+        bitmaps=[pygame.image.load("./img/tree3.png")],
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
 
 
 class PineTree(GameObject):
@@ -286,9 +269,9 @@ class PineTree(GameObject):
             self,
             x_coordinate=None,
             y_coordinate=None,
-            bitmap=pygame.image.load("./img/tree2.png"),
+            bitmaps=[pygame.image.load("./img/tree2.png")],
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
 
 
 class OldTree(GameObject):
@@ -296,9 +279,9 @@ class OldTree(GameObject):
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/tree4.png"),
+        bitmaps=[pygame.image.load("./img/tree4.png")],
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
 
 
 class PieceOfWood(GameObject):
@@ -306,18 +289,18 @@ class PieceOfWood(GameObject):
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/piece_of_wood.png"),
+        bitmaps=[pygame.image.load("./img/piece_of_wood.png")],
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
 
 class Bushes1(GameObject):
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/bushes1.png"),
+        bitmaps=[pygame.image.load("./img/bushes1.png")],
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
 
 
 class Rock(GameObject):
@@ -325,6 +308,6 @@ class Rock(GameObject):
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmap=pygame.image.load("./img/rock.png"),
+        bitmaps=[pygame.image.load("./img/rock.png")],
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmap)
+        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
