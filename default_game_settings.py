@@ -21,50 +21,50 @@ screen_info = pygame.display.Info()
 
 NODE_SIZE = 80
 GAME_SCREEN_SIZE = screen_info.current_w, screen_info.current_h
-FPS = 70
+FPS = 60
 
 random_map_matrix = [
     random.choices(
         [
             MapTile(
-                True,
-                False,
+                is_possible_to_cross=True,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Grass(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Rock(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Tree(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=OldTree(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=PineTree(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=PieceOfWood(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Bushes1(),
             ),
@@ -87,7 +87,7 @@ map.draw_whole_map()
 mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 
 my_character = Character(5, 5, map)
-my_character.update_map_shadow_tiles_around()
+my_character.delete_map_shadow_tiles_around()
 
 bird1 = Bird1(3, 3, map)
 
@@ -99,4 +99,4 @@ clouds = [
     )
     for _ in range(0, 4)
 ]
-dynamic_objects = [my_character, bird1]
+dynamic_objects = [my_character, bird1, *clouds]

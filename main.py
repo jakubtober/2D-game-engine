@@ -13,7 +13,6 @@ from default_game_settings import (
     clouds, bird1,
     dynamic_objects,
 )
-from game_objects import Cloud
 from help_functions import tile_row_and_column
 
 
@@ -99,7 +98,8 @@ while True:
 
     if my_character.is_moving:
         my_character.move()
-        my_character.update_map_shadow_tiles_around()
+
+    my_character.delete_map_shadow_tiles_around()
 
     map.display_visible_map_surface(screen)
     my_character.draw(screen)
@@ -111,5 +111,4 @@ while True:
     mini_map.draw(screen, map, my_character)
 
     pygame.display.update()
-
     fpsClock.tick(FPS)

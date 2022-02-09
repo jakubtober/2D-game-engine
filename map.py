@@ -61,7 +61,7 @@ class Map:
             actual_tile.fixed_tile_game_object.x_coordinate = x
             actual_tile.fixed_tile_game_object.y_coordinate = y
 
-            if actual_tile.is_visible:
+            if self.map_matrix[tile_row_index][tile_column_index].is_visible:
                 self.whole_map_surface.blit(
                     actual_tile.background_game_object.bitmap,
                     (
@@ -86,31 +86,31 @@ class Map:
                 )
                 pygame.draw.rect(self.whole_map_surface, (0, 0, 0), map_shadow_tile, 1)
 
-    def update_shadow_map_tile(self, tile_row_index: int, tile_column_index: int):
+    def delete_shadow_map_tile(self, tile_row_index: int, tile_column_index: int):
         actual_tile = self.map_matrix[tile_row_index][tile_column_index]
+        self.map_matrix[tile_row_index][tile_column_index].is_visible = True
 
-        if not actual_tile.is_visible:
-            x = tile_column_index * default_game_settings.NODE_SIZE
-            y = tile_row_index * default_game_settings.NODE_SIZE
+        x = tile_column_index * default_game_settings.NODE_SIZE
+        y = tile_row_index * default_game_settings.NODE_SIZE
 
-            actual_tile.fixed_tile_game_object.x_coordinate = x
-            actual_tile.fixed_tile_game_object.y_coordinate = y
+        actual_tile.fixed_tile_game_object.x_coordinate = x
+        actual_tile.fixed_tile_game_object.y_coordinate = y
 
-            self.whole_map_surface.blit(
-                actual_tile.background_game_object.bitmaps[0],
-                (
-                    actual_tile.fixed_tile_game_object.x_coordinate,
-                    actual_tile.fixed_tile_game_object.y_coordinate,
-                ),
-            )
+        self.whole_map_surface.blit(
+            actual_tile.background_game_object.bitmaps[0],
+            (
+                actual_tile.fixed_tile_game_object.x_coordinate,
+                actual_tile.fixed_tile_game_object.y_coordinate,
+            ),
+        )
 
-            self.whole_map_surface.blit(
-                actual_tile.fixed_tile_game_object.bitmaps[0],
-                (
-                    actual_tile.fixed_tile_game_object.x_coordinate,
-                    actual_tile.fixed_tile_game_object.y_coordinate,
-                ),
-            )
+        self.whole_map_surface.blit(
+            actual_tile.fixed_tile_game_object.bitmaps[0],
+            (
+                actual_tile.fixed_tile_game_object.x_coordinate,
+                actual_tile.fixed_tile_game_object.y_coordinate,
+            ),
+        )
 
     def display_visible_map_surface(self, screen):
         visible_map_rect = (
@@ -124,7 +124,6 @@ class Map:
         # draw yellow border around node that is pointed by the mouse
 
         tile = tile_row_and_column(pygame.mouse.get_pos())
-        print(self.map_matrix[tile[0]][tile[1]].is_visible)
         rect_x_coordinate = tile[1] * default_game_settings.NODE_SIZE
         rect_y_coordinate = tile[0] * default_game_settings.NODE_SIZE
         yellow_border_node_rect = (

@@ -87,10 +87,10 @@ class Character(GameObject):
             pygame.image.load("./img/character_w/character_w3.png"),
         ]
         self.bitmaps = self.character_east_bitmaps
-        self.update_map_shadow_tiles_around()
 
-    def update_map_shadow_tiles_around(self):
+    def delete_map_shadow_tiles_around(self):
         actual_character_tile = self.actual_row_and_column_index(self.map)
+
         for tile_row_to_update in range(
             actual_character_tile[0] - 3, actual_character_tile[0] + 4
         ):
@@ -101,8 +101,9 @@ class Character(GameObject):
                     (tile_row_to_update - actual_character_tile[0]) ** 2
                     + (tile_column_to_update - actual_character_tile[1]) ** 2
                 )
+
                 if distance_to_character <= 4:
-                    self.map.update_shadow_map_tile(
+                    self.map.delete_shadow_map_tile(
                         tile_row_to_update,
                         tile_column_to_update,
                     )
@@ -263,9 +264,10 @@ class Bird1(GameObject):
     def draw(self, screen):
         actual_tile = self.actual_row_and_column_index(self.map)
 
-        screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
-        self._animate_bitmaps()
-        self.move()
+        if self.map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible:
+            screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+            self._animate_bitmaps()
+            self.move()
 
 
 class Cloud(GameObject):
