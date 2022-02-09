@@ -241,7 +241,7 @@ class Bird1(GameObject):
         )
         self.map = map
 
-        self.is_moving = False
+        self.is_moving = True
         self.direction = "E"
 
         self.east_bitmaps = [
@@ -256,18 +256,45 @@ class Bird1(GameObject):
         ]
         self.bitmaps = self.east_bitmaps
 
-    def move(self):
-        if not self.is_moving:
+    def _wait_and_turn_direction(self):
+        if self.fps_counter >= 240:
+            self.fps_counter = 0
+
+            if self.direction == "E":
+                self.direction = "W"
+                self.x_coordinate -= 5
+            elif self.direction == "W":
+                self.direction = "E"
+                self.x_coordinate += 5
+
             self.is_moving = True
-        self.x_coordinate += 1
+
+        self.fps_counter += 1
+
+    def move(self):
+        if self.is_moving:
+            if self.direction == "E":
+                self.x_coordinate += 1
+            elif self.direction == "W":
+                self.x_coordinate -= 1
 
     def draw(self, screen):
         actual_tile = self.actual_row_and_column_index(self.map)
+        is_grass = isinstance(self.map.map_matrix[actual_tile[0]][actual_tile[1]].fixed_tile_game_object, Grass)
 
-        if self.map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible:
-            screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+        print(self.fps_counter)
+        if self.map.map_matrix[actual_tile[0]][actual_tile[1]].is_visible and is_grass and self.is_moving:
+            if self.direction == "E":
+                screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+            elif self.direction == "W":
+                screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+
             self._animate_bitmaps()
             self.move()
+        else:
+            self.is_moving = False
+            screen.blit(self.east_bitmaps[0], (self.x_coordinate, self.y_coordinate))
+            self._wait_and_turn_direction()
 
 
 class Cloud(GameObject):
