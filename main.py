@@ -11,6 +11,7 @@ from default_game_settings import (
     screen,
     mini_map,
     clouds, bird1,
+    dynamic_objects,
 )
 from game_objects import Cloud
 from help_functions import tile_row_and_column
@@ -18,7 +19,7 @@ from help_functions import tile_row_and_column
 
 #  Main game loop
 while True:
-    print(fpsClock)
+    # print(fpsClock)
     mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get():
@@ -53,19 +54,23 @@ while True:
             ):
                 if map.column_index_of_first_visible_tile < map.map_columns - 10:
                     map.column_index_of_first_visible_tile += 1
-                    my_character.update_map_movement_position(1, 0)
+                    for moving_object in dynamic_objects:
+                        moving_object.update_map_movement_position(1, 0)
             elif event.key == pygame.K_LEFT:
                 if map.column_index_of_first_visible_tile > 0:
                     map.column_index_of_first_visible_tile -= 1
-                    my_character.update_map_movement_position(-1, 0)
+                    for moving_object in dynamic_objects:
+                        moving_object.update_map_movement_position(-1, 0)
             elif event.key == pygame.K_UP:
                 if map.row_index_of_first_visible_tile > 0:
                     map.row_index_of_first_visible_tile -= 1
-                    my_character.update_map_movement_position(0, -1)
+                    for moving_object in dynamic_objects:
+                        moving_object.update_map_movement_position(0, -1)
             elif event.key == pygame.K_DOWN:
                 if map.row_index_of_first_visible_tile < map.map_rows - 10:
                     map.row_index_of_first_visible_tile += 1
-                    my_character.update_map_movement_position(0, 1)
+                    for moving_object in dynamic_objects:
+                        moving_object.update_map_movement_position(0, 1)
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
@@ -74,19 +79,23 @@ while True:
             if mouse_pos[0] > GAME_SCREEN_SIZE[0] - 40:
                 if map.column_index_of_first_visible_tile < map.map_columns - 10:
                     map.column_index_of_first_visible_tile += 1
-                    my_character.update_map_movement_position(1, 0)
+                    for moving_object in dynamic_objects:
+                        moving_object.update_map_movement_position(1, 0)
             elif mouse_pos[0] < 40:
                 if map.column_index_of_first_visible_tile > 0:
                     map.column_index_of_first_visible_tile -= 1
-                    my_character.update_map_movement_position(-1, 0)
+                    for moving_object in dynamic_objects:
+                        moving_object.update_map_movement_position(-1, 0)
             elif mouse_pos[1] < 40:
                 if map.row_index_of_first_visible_tile > 0:
                     map.row_index_of_first_visible_tile -= 1
-                    my_character.update_map_movement_position(0, -1)
+                    for moving_object in dynamic_objects:
+                        moving_object.update_map_movement_position(0, -1)
             elif mouse_pos[1] > GAME_SCREEN_SIZE[1] - 40:
                 if map.row_index_of_first_visible_tile < map.map_rows - 10:
                     map.row_index_of_first_visible_tile += 1
-                    my_character.update_map_movement_position(0, 1)
+                    for moving_object in dynamic_objects:
+                        moving_object.update_map_movement_position(0, 1)
 
     if my_character.is_moving:
         my_character.move()

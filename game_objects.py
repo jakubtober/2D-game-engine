@@ -48,6 +48,12 @@ class GameObject:
         )
         self._animate_bitmaps()
 
+    def update_map_movement_position(self, tile_column_change, tile_row_change):
+        self.x_coordinate += default_game_settings.NODE_SIZE * (
+            tile_column_change * (-1)
+        )
+        self.y_coordinate += default_game_settings.NODE_SIZE * (tile_row_change * (-1))
+
 
 class Character(GameObject):
     def __init__(self, tile_x: int, tile_y: int, map):
@@ -224,12 +230,6 @@ class Character(GameObject):
             if path:
                 return path
 
-    def update_map_movement_position(self, tile_column_change, tile_row_change):
-        self.x_coordinate += default_game_settings.NODE_SIZE * (
-            tile_column_change * (-1)
-        )
-        self.y_coordinate += default_game_settings.NODE_SIZE * (tile_row_change * (-1))
-
 
 class Bird1(GameObject):
     def __init__(self, tile_x: int, tile_y: int, map):
@@ -261,12 +261,11 @@ class Bird1(GameObject):
         self.x_coordinate += 1
 
     def draw(self, screen):
-        actual_tile = tile_row_and_column((self.x_coordinate, self.y_coordinate))
+        actual_tile = self.actual_row_and_column_index(self.map)
 
-        if not self.map.map_matrix[actual_tile[0]][actual_tile[1]].is_visible:
-            screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
-            self._animate_bitmaps()
-            self.move()
+        screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+        self._animate_bitmaps()
+        self.move()
 
 
 class Cloud(GameObject):

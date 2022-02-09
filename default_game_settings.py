@@ -89,7 +89,7 @@ mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 my_character = Character(5, 5, map)
 my_character.update_map_shadow_tiles_around()
 
-bird1 = Bird1(10, 3, map)
+bird1 = Bird1(3, 3, map)
 
 clouds = [
     Cloud(
@@ -99,4 +99,4 @@ clouds = [
     )
     for _ in range(0, 4)
 ]
-print(clouds[0].bitmaps)
+dynamic_objects = [my_character, bird1]

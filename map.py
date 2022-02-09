@@ -124,6 +124,7 @@ class Map:
         # draw yellow border around node that is pointed by the mouse
 
         tile = tile_row_and_column(pygame.mouse.get_pos())
+        print(self.map_matrix[tile[0]][tile[1]].is_visible)
         rect_x_coordinate = tile[1] * default_game_settings.NODE_SIZE
         rect_y_coordinate = tile[0] * default_game_settings.NODE_SIZE
         yellow_border_node_rect = (
