@@ -20,12 +20,12 @@ class GameObject:
         self.fps_counter = 0
         self.bitmap_frame_index = 0
 
-    def actual_row_and_column_index(self, map):
+    def actual_row_and_column_index(self, map, x_offset: int = 0, y_offset: int = 0):
         actual_tile_row_index = map.row_index_of_first_visible_tile + (
-            self.y_coordinate // default_game_settings.NODE_SIZE
+            (self.y_coordinate // default_game_settings.NODE_SIZE)
         )
         tile_column_index = map.column_index_of_first_visible_tile + (
-            self.x_coordinate // default_game_settings.NODE_SIZE
+            (self.x_coordinate // default_game_settings.NODE_SIZE)
         )
         return actual_tile_row_index, tile_column_index
 
@@ -243,6 +243,7 @@ class Bird1(GameObject):
 
         self.is_moving = True
         self.direction = "E"
+        self.last_tile_i_wait = (-1, -1)
 
         self.east_bitmaps = [
             pygame.image.load("./img/bird1_e/bird1_e1.png"),
@@ -257,16 +258,14 @@ class Bird1(GameObject):
         self.bitmaps = self.east_bitmaps
 
     def _wait_and_turn_direction(self):
-        if self.fps_counter >= 240:
+        directions = ["E", "W", "S", "N"]
+        directions.remove(self.direction)
+
+        self.direction = random.choice(directions)
+
+        if self.fps_counter >= 60:
             self.fps_counter = 0
-
-            if self.direction == "E":
-                self.direction = "W"
-                self.x_coordinate -= 5
-            elif self.direction == "W":
-                self.direction = "E"
-                self.x_coordinate += 5
-
+            self.last_tile_i_wait = self.actual_row_and_column_index(self.map)
             self.is_moving = True
 
         self.fps_counter += 1
@@ -277,24 +276,68 @@ class Bird1(GameObject):
                 self.x_coordinate += 1
             elif self.direction == "W":
                 self.x_coordinate -= 1
+            elif self.direction == "S":
+                self.y_coordinate += 1
+            elif self.direction == "N":
+                self.y_coordinate -= 1
+
+    def select_images_for_the_direction_to_draw(self, screen):
+        if self.direction == "E":
+            screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+        elif self.direction == "W":
+            screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+        elif self.direction == "S":
+            screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+        elif self.direction == "N":
+            screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
 
     def draw(self, screen):
-        actual_tile = self.actual_row_and_column_index(self.map)
+        actual_tile = self.actual_row_and_column_index(
+            self.map,
+        )
+        tile_x_coordinate = global_column_to_local_x_coordinate(
+            self.map,
+            actual_tile[1],
+        )
+        tile_y_coordinate = global_row_to_local_y_coordinate(
+            self.map,
+            actual_tile[0],
+        )
+
+        bird_is_on_the_tile = all([
+            tile_x_coordinate == self.x_coordinate,
+            tile_y_coordinate == self.y_coordinate,
+        ])
+
         is_grass = isinstance(self.map.map_matrix[actual_tile[0]][actual_tile[1]].fixed_tile_game_object, Grass)
 
-        print(self.fps_counter)
-        if self.map.map_matrix[actual_tile[0]][actual_tile[1]].is_visible and is_grass and self.is_moving:
-            if self.direction == "E":
-                screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
-            elif self.direction == "W":
-                screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+        if self.map.map_matrix[actual_tile[0]][actual_tile[1]].is_visible:
+            if not bird_is_on_the_tile:
+                # leci
+                self.select_images_for_the_direction_to_draw(screen)
+                self._animate_bitmaps()
+                self.move()
+            elif bird_is_on_the_tile:
+                if is_grass:
+                    # leci
+                    self.select_images_for_the_direction_to_draw(screen)
+                    self._animate_bitmaps()
+                    self.move()
+                elif not is_grass:
+                    # jezeli pierwszy raz
+                    if self.last_tile_i_wait != actual_tile:
+                        self.is_moving = False
+                        screen.blit(self.east_bitmaps[0], (self.x_coordinate, self.y_coordinate))
+                        self._wait_and_turn_direction()
+                    # jezeli juz czekal
+                    else:
+                        self.select_images_for_the_direction_to_draw(screen)
+                        self._animate_bitmaps()
+                        self.move()
 
-            self._animate_bitmaps()
-            self.move()
         else:
-            self.is_moving = False
-            screen.blit(self.east_bitmaps[0], (self.x_coordinate, self.y_coordinate))
-            self._wait_and_turn_direction()
+            # nie robi nic bo go nie widac
+            pass
 
 
 class Cloud(GameObject):
