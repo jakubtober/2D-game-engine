@@ -3,57 +3,68 @@ from pygame import *
 import random
 
 from map import Map, MapTile, MiniMap
-from game_objects import Character, Cloud, Grass, Tree, PineTree, OldTree, PieceOfWood, Rock, Bushes1
+from game_objects import (
+    Character,
+    Bird1,
+    Cloud,
+    Grass,
+    Tree,
+    PineTree,
+    OldTree,
+    PieceOfWood,
+    Rock,
+    Bushes1,
+)
 
 pygame.init()
 screen_info = pygame.display.Info()
 
 NODE_SIZE = 80
 GAME_SCREEN_SIZE = screen_info.current_w, screen_info.current_h
-FPS = 70
+FPS = 60
 
 random_map_matrix = [
     random.choices(
         [
             MapTile(
-                True,
-                False,
+                is_possible_to_cross=True,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Grass(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Rock(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Tree(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=OldTree(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=PineTree(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=PieceOfWood(),
             ),
             MapTile(
-                False,
-                False,
+                is_possible_to_cross=False,
+                is_visible=False,
                 background_game_object=Grass(),
                 fixed_tile_game_object=Bushes1(),
             ),
@@ -76,4 +87,19 @@ map.draw_whole_map()
 mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 
 my_character = Character(5, 5, map)
-Cloud.generate_clouds()
+my_character.delete_map_shadow_tiles_around()
+
+birds1 = [
+    Bird1(random.randint(0, 10), random.randint(0, 10), map)
+    for _ in range(10)
+]
+
+clouds = [
+    Cloud(
+        random.randint(0, 700),
+        random.randint(0, 700),
+        [random.choice(Cloud.cloud_bitmaps)],
+    )
+    for _ in range(0, 4)
+]
+dynamic_objects = [my_character, *birds1, *clouds]
