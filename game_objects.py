@@ -243,7 +243,7 @@ class Bird1(GameObject):
 
         self.is_moving = True
         self.direction = "E"
-        self.last_tile_i_wait = (-1, -1)
+        self.last_tile_i_waited = (-1, -1)
 
         self.east_bitmaps = [
             pygame.image.load("./img/bird1_e/bird1_e1.png"),
@@ -260,12 +260,11 @@ class Bird1(GameObject):
     def _wait_and_turn_direction(self):
         directions = ["E", "W", "S", "N"]
         directions.remove(self.direction)
-
         self.direction = random.choice(directions)
 
         if self.fps_counter >= 60:
             self.fps_counter = 0
-            self.last_tile_i_wait = self.actual_row_and_column_index(self.map)
+            self.last_tile_i_waited = self.actual_row_and_column_index(self.map)
             self.is_moving = True
 
         self.fps_counter += 1
@@ -281,7 +280,16 @@ class Bird1(GameObject):
             elif self.direction == "N":
                 self.y_coordinate -= 1
 
-    def select_images_for_the_direction_to_draw(self, screen):
+        if self.actual_row_and_column_index(self.map)[1] < 0:
+            self.direction = "E"
+        elif self.actual_row_and_column_index(self.map)[1] > 100:
+            self.direction = "W"
+        elif self.actual_row_and_column_index(self.map)[0] < 0:
+            self.direction = "S"
+        elif self.actual_row_and_column_index(self.map)[0] > 100:
+            self.direction = "N"
+
+    def draw_bitmaps_for_the_right_direction(self, screen):
         if self.direction == "E":
             screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
         elif self.direction == "W":
@@ -313,30 +321,24 @@ class Bird1(GameObject):
 
         if self.map.map_matrix[actual_tile[0]][actual_tile[1]].is_visible:
             if not bird_is_on_the_tile:
-                # leci
-                self.select_images_for_the_direction_to_draw(screen)
+                self.draw_bitmaps_for_the_right_direction(screen)
                 self._animate_bitmaps()
                 self.move()
             elif bird_is_on_the_tile:
                 if is_grass:
-                    # leci
-                    self.select_images_for_the_direction_to_draw(screen)
+                    self.draw_bitmaps_for_the_right_direction(screen)
                     self._animate_bitmaps()
                     self.move()
                 elif not is_grass:
-                    # jezeli pierwszy raz
-                    if self.last_tile_i_wait != actual_tile:
+                    if self.last_tile_i_waited != actual_tile:
                         self.is_moving = False
                         screen.blit(self.east_bitmaps[0], (self.x_coordinate, self.y_coordinate))
                         self._wait_and_turn_direction()
-                    # jezeli juz czekal
                     else:
-                        self.select_images_for_the_direction_to_draw(screen)
+                        self.draw_bitmaps_for_the_right_direction(screen)
                         self._animate_bitmaps()
                         self.move()
-
         else:
-            # nie robi nic bo go nie widac
             pass
 
 

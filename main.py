@@ -10,15 +10,16 @@ from default_game_settings import (
     map,
     screen,
     mini_map,
-    clouds, bird1,
+    clouds,
     dynamic_objects,
+    birds1,
 )
 from help_functions import tile_row_and_column
 
 
 #  Main game loop
 while True:
-    # print(fpsClock)
+    print(fpsClock)
     mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get():
@@ -103,7 +104,8 @@ while True:
 
     map.display_visible_map_surface(screen)
     my_character.draw(screen)
-    bird1.draw(screen)
+    for bird in birds1:
+        bird.draw(screen)
 
     for cloud in clouds:
         cloud.draw(screen)

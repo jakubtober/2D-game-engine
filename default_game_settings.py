@@ -89,7 +89,10 @@ mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 my_character = Character(5, 5, map)
 my_character.delete_map_shadow_tiles_around()
 
-bird1 = Bird1(3, 3, map)
+birds1 = [
+    Bird1(random.randint(0, 10), random.randint(0, 10), map)
+    for _ in range(10)
+]
 
 clouds = [
     Cloud(
@@ -99,4 +102,4 @@ clouds = [
     )
     for _ in range(0, 4)
 ]
-dynamic_objects = [my_character, bird1, *clouds]
+dynamic_objects = [my_character, *birds1, *clouds]
