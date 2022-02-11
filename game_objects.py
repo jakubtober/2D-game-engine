@@ -13,14 +13,15 @@ from help_functions import (
 
 
 class GameObject:
-    def __init__(self, x_coordinate=None, y_coordinate=None, bitmaps=list):
+    bitmaps = list()
+
+    def __init__(self, x_coordinate=None, y_coordinate=None):
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
-        self.bitmaps = bitmaps
         self.fps_counter = 0
         self.bitmap_frame_index = 0
 
-    def actual_row_and_column_index(self, map, x_offset: int = 0, y_offset: int = 0):
+    def actual_row_and_column_index(self, map):
         actual_tile_row_index = map.row_index_of_first_visible_tile + (
             (self.y_coordinate // default_game_settings.NODE_SIZE)
         )
@@ -41,7 +42,7 @@ class GameObject:
         self.fps_counter += 1
         return self.bitmap_frame_index
 
-    def draw(self, screen):
+    def draw(self, screen, map):
         screen.blit(
             self.bitmaps[self.bitmap_frame_index],
             (self.x_coordinate, self.y_coordinate),
@@ -56,13 +57,24 @@ class GameObject:
 
 
 class Character(GameObject):
-    def __init__(self, tile_x: int, tile_y: int, map):
+    character_east_bitmaps = [
+        pygame.image.load("./img/character_e/character_e1.png"),
+        pygame.image.load("./img/character_e/character_e2.png"),
+        pygame.image.load("./img/character_e/character_e3.png"),
+    ]
+    character_west_bitmaps = [
+        pygame.image.load("./img/character_w/character_w1.png"),
+        pygame.image.load("./img/character_w/character_w2.png"),
+        pygame.image.load("./img/character_w/character_w3.png"),
+    ]
+    bitmaps = character_east_bitmaps
+
+    def __init__(self, tile_x: int, tile_y: int):
         GameObject.__init__(
             self,
             tile_x * default_game_settings.NODE_SIZE,
             tile_y * default_game_settings.NODE_SIZE,
         )
-        self.map = map
         self.tile_column = self.x_coordinate // default_game_settings.NODE_SIZE
         self.tile_row = self.y_coordinate // default_game_settings.NODE_SIZE
 
@@ -76,20 +88,8 @@ class Character(GameObject):
         self.path = []
         self.direction = "E"
 
-        self.character_east_bitmaps = [
-            pygame.image.load("./img/character_e/character_e1.png"),
-            pygame.image.load("./img/character_e/character_e2.png"),
-            pygame.image.load("./img/character_e/character_e3.png"),
-        ]
-        self.character_west_bitmaps = [
-            pygame.image.load("./img/character_w/character_w1.png"),
-            pygame.image.load("./img/character_w/character_w2.png"),
-            pygame.image.load("./img/character_w/character_w3.png"),
-        ]
-        self.bitmaps = self.character_east_bitmaps
-
-    def delete_map_shadow_tiles_around(self):
-        actual_character_tile = self.actual_row_and_column_index(self.map)
+    def delete_map_shadow_tiles_around(self, map):
+        actual_character_tile = self.actual_row_and_column_index(map)
 
         for tile_row_to_update in range(
             actual_character_tile[0] - 3, actual_character_tile[0] + 4
@@ -103,12 +103,12 @@ class Character(GameObject):
                 )
 
                 if distance_to_character <= 4:
-                    self.map.delete_shadow_map_tile(
+                    map.delete_shadow_map_tile(
                         tile_row_to_update,
                         tile_column_to_update,
                     )
 
-    def draw(self, screen):
+    def draw(self, screen, map):
         if self.is_moving:
             if self.direction == "E":
                 screen.blit(
@@ -122,11 +122,11 @@ class Character(GameObject):
                 )
 
             circle_x = (
-                global_column_to_local_x_coordinate(self.map, (self.path_end_tile[1]))
+                global_column_to_local_x_coordinate(map, (self.path_end_tile[1]))
                 + 40
             )
             circle_y = (
-                global_row_to_local_y_coordinate(self.map, (self.path_end_tile[0])) + 40
+                global_row_to_local_y_coordinate(map, (self.path_end_tile[0])) + 40
             )
 
             pygame.draw.circle(
@@ -149,21 +149,21 @@ class Character(GameObject):
                     (self.x_coordinate, self.y_coordinate),
                 )
 
-    def move(self):
+    def move(self, map):
         end_tile_x_is_self_x = (
-            global_column_to_local_x_coordinate(self.map, self.path_end_tile[1])
+            global_column_to_local_x_coordinate(map, self.path_end_tile[1])
             == self.x_coordinate
         )
         end_tile_y_is_self_y = (
-            global_row_to_local_y_coordinate(self.map, self.path_end_tile[0])
+            global_row_to_local_y_coordinate(map, self.path_end_tile[0])
             == self.y_coordinate
         )
         second_path_tile_x_is_self_x = (
-            global_column_to_local_x_coordinate(self.map, self.path[1][1])
+            global_column_to_local_x_coordinate(map, self.path[1][1])
             == self.x_coordinate
         )
         second_path_tile_y_is_self_y = (
-            global_row_to_local_y_coordinate(self.map, self.path[1][0])
+            global_row_to_local_y_coordinate(map, self.path[1][0])
             == self.y_coordinate
         )
 
@@ -172,28 +172,28 @@ class Character(GameObject):
                 self.is_moving = False
             else:
                 if second_path_tile_x_is_self_x and second_path_tile_y_is_self_y:
-                    self.path[1] = self.actual_row_and_column_index(self.map)
+                    self.path[1] = self.actual_row_and_column_index(map)
                     self.path.pop(0)
                 else:
                     if (
-                        global_column_to_local_x_coordinate(self.map, self.path[1][1])
+                        global_column_to_local_x_coordinate(map, self.path[1][1])
                         - self.x_coordinate
                     ) < 0:
                         self.x_coordinate -= 1
                         self.direction = "W"
                     elif (
-                        global_column_to_local_x_coordinate(self.map, self.path[1][1])
+                        global_column_to_local_x_coordinate(map, self.path[1][1])
                         - self.x_coordinate
                     ) > 0:
                         self.x_coordinate += 1
                         self.direction = "E"
                     if (
-                        global_row_to_local_y_coordinate(self.map, self.path[1][0])
+                        global_row_to_local_y_coordinate(map, self.path[1][0])
                         - self.y_coordinate
                     ) < 0:
                         self.y_coordinate -= 1
                     elif (
-                        global_row_to_local_y_coordinate(self.map, self.path[1][0])
+                        global_row_to_local_y_coordinate(map, self.path[1][0])
                         - self.y_coordinate
                     ) > 0:
                         self.y_coordinate += 1
@@ -233,43 +233,41 @@ class Character(GameObject):
 
 
 class Bird1(GameObject):
-    def __init__(self, tile_x: int, tile_y: int, map):
+    east_bitmaps = [
+        pygame.image.load("./img/bird1_e/bird1_e1.png"),
+        pygame.image.load("./img/bird1_e/bird1_e2.png"),
+        pygame.image.load("./img/bird1_e/bird1_e3.png"),
+    ]
+    west_bitmaps = [
+        pygame.image.load("./img/bird1_w/bird1_w1.png"),
+        pygame.image.load("./img/bird1_w/bird1_w2.png"),
+        pygame.image.load("./img/bird1_w/bird1_w3.png"),
+    ]
+    bitmaps = east_bitmaps
+
+    def __init__(self, tile_x: int, tile_y: int):
         GameObject.__init__(
             self,
             tile_x * default_game_settings.NODE_SIZE,
             tile_y * default_game_settings.NODE_SIZE,
         )
-        self.map = map
-
         self.is_moving = True
         self.direction = "E"
         self.last_tile_i_waited = (-1, -1)
 
-        self.east_bitmaps = [
-            pygame.image.load("./img/bird1_e/bird1_e1.png"),
-            pygame.image.load("./img/bird1_e/bird1_e2.png"),
-            pygame.image.load("./img/bird1_e/bird1_e3.png"),
-        ]
-        self.west_bitmaps = [
-            pygame.image.load("./img/bird1_w/bird1_w1.png"),
-            pygame.image.load("./img/bird1_w/bird1_w2.png"),
-            pygame.image.load("./img/bird1_w/bird1_w3.png"),
-        ]
-        self.bitmaps = self.east_bitmaps
-
-    def _wait_and_turn_direction(self):
+    def _wait_and_turn_direction(self, map):
         directions = ["E", "W", "S", "N"]
         directions.remove(self.direction)
         self.direction = random.choice(directions)
 
-        if self.fps_counter >= 60:
+        if self.fps_counter >= 240:
             self.fps_counter = 0
-            self.last_tile_i_waited = self.actual_row_and_column_index(self.map)
+            self.last_tile_i_waited = self.actual_row_and_column_index(map)
             self.is_moving = True
 
         self.fps_counter += 1
 
-    def move(self):
+    def move(self, map):
         if self.is_moving:
             if self.direction == "E":
                 self.x_coordinate += 1
@@ -280,13 +278,13 @@ class Bird1(GameObject):
             elif self.direction == "N":
                 self.y_coordinate -= 1
 
-        if self.actual_row_and_column_index(self.map)[1] < 0:
+        if self.actual_row_and_column_index(map)[1] < 0:
             self.direction = "E"
-        elif self.actual_row_and_column_index(self.map)[1] > 100:
+        elif self.actual_row_and_column_index(map)[1] > 100:
             self.direction = "W"
-        elif self.actual_row_and_column_index(self.map)[0] < 0:
+        elif self.actual_row_and_column_index(map)[0] < 0:
             self.direction = "S"
-        elif self.actual_row_and_column_index(self.map)[0] > 100:
+        elif self.actual_row_and_column_index(map)[0] > 100:
             self.direction = "N"
 
     def draw_bitmaps_for_the_right_direction(self, screen):
@@ -299,16 +297,16 @@ class Bird1(GameObject):
         elif self.direction == "N":
             screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
 
-    def draw(self, screen):
+    def draw(self, screen, map):
         actual_tile = self.actual_row_and_column_index(
-            self.map,
+            map,
         )
         tile_x_coordinate = global_column_to_local_x_coordinate(
-            self.map,
+            map,
             actual_tile[1],
         )
         tile_y_coordinate = global_row_to_local_y_coordinate(
-            self.map,
+            map,
             actual_tile[0],
         )
 
@@ -317,27 +315,27 @@ class Bird1(GameObject):
             tile_y_coordinate == self.y_coordinate,
         ])
 
-        is_grass = isinstance(self.map.map_matrix[actual_tile[0]][actual_tile[1]].fixed_tile_game_object, Grass)
+        is_grass = isinstance(map.map_matrix[actual_tile[0]][actual_tile[1]].fixed_tile_game_object, Grass)
 
-        if self.map.map_matrix[actual_tile[0]][actual_tile[1]].is_visible:
+        if map.map_matrix[actual_tile[0]][actual_tile[1]].is_visible:
             if not bird_is_on_the_tile:
                 self.draw_bitmaps_for_the_right_direction(screen)
                 self._animate_bitmaps()
-                self.move()
+                self.move(map)
             elif bird_is_on_the_tile:
                 if is_grass:
                     self.draw_bitmaps_for_the_right_direction(screen)
                     self._animate_bitmaps()
-                    self.move()
+                    self.move(map)
                 elif not is_grass:
                     if self.last_tile_i_waited != actual_tile:
                         self.is_moving = False
                         screen.blit(self.east_bitmaps[0], (self.x_coordinate, self.y_coordinate))
-                        self._wait_and_turn_direction()
+                        self._wait_and_turn_direction(map)
                     else:
                         self.draw_bitmaps_for_the_right_direction(screen)
                         self._animate_bitmaps()
-                        self.move()
+                        self.move(map)
         else:
             pass
 
@@ -351,7 +349,8 @@ class Cloud(GameObject):
     ]
 
     def __init__(self, x_coordinate, y_coordinate, bitmaps):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
+        GameObject.__init__(self, x_coordinate, y_coordinate)
+        self.bitmaps = bitmaps
 
     def move(self):
         self.x_coordinate += 1
@@ -361,90 +360,83 @@ class Cloud(GameObject):
             self.x_coordinate = random.randint(-300, -100)
             self.y_coordinate = random.randint(100, 700)
 
-    def draw(self, screen):
+    def draw(self, screen, map):
         screen.blit(self.bitmaps[0], (self.x_coordinate, self.y_coordinate))
         self.move()
 
 
 class Grass(GameObject):
+    bitmaps = [pygame.image.load("./img/grass.jpg")]
+
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmaps=None,
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
-        if bitmaps is None:
-            self.bitmaps = [pygame.image.load("./img/grass.jpg")]
+        GameObject.__init__(self, x_coordinate, y_coordinate)
 
 
 class Tree(GameObject):
+    bitmaps = [pygame.image.load("./img/tree3.png")]
+
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmaps=None,
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
-        if bitmaps is None:
-            self.bitmaps = [pygame.image.load("./img/tree3.png")]
+        GameObject.__init__(self, x_coordinate, y_coordinate)
 
 
 class PineTree(GameObject):
+    bitmaps = [pygame.image.load("./img/tree2.png")]
+
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmaps=None,
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
-        if bitmaps is None:
-            self.bitmaps = [pygame.image.load("./img/tree2.png")]
+        GameObject.__init__(self, x_coordinate, y_coordinate)
 
 
 class OldTree(GameObject):
+    bitmaps = [pygame.image.load("./img/tree4.png")]
+
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmaps=None,
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
-        if bitmaps is None:
-            self.bitmaps = [pygame.image.load("./img/tree4.png")]
+        GameObject.__init__(self, x_coordinate, y_coordinate)
 
 
 class PieceOfWood(GameObject):
+    bitmaps = [pygame.image.load("./img/piece_of_wood.png")]
+
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmaps=None,
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
-        if bitmaps is None:
-            self.bitmaps = [pygame.image.load("./img/piece_of_wood.png")]
+        GameObject.__init__(self, x_coordinate, y_coordinate)
 
 
 class Bushes1(GameObject):
+    bitmaps = [pygame.image.load("./img/bushes1.png")]
+
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmaps=None,
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
-        if bitmaps is None:
-            self.bitmaps = [pygame.image.load("./img/bushes1.png")]
+        GameObject.__init__(self, x_coordinate, y_coordinate)
 
 
 class Rock(GameObject):
+    bitmaps = [pygame.image.load("./img/rock.png")]
+
     def __init__(
         self,
         x_coordinate=None,
         y_coordinate=None,
-        bitmaps=None,
     ):
-        GameObject.__init__(self, x_coordinate, y_coordinate, bitmaps)
-        if bitmaps is None:
-            self.bitmaps = [pygame.image.load("./img/rock.png")]
+        GameObject.__init__(self, x_coordinate, y_coordinate)

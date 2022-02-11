@@ -98,17 +98,17 @@ while True:
                         moving_object.update_map_movement_position(0, 1)
 
     if my_character.is_moving:
-        my_character.move()
+        my_character.move(map)
 
-    my_character.delete_map_shadow_tiles_around()
+    my_character.delete_map_shadow_tiles_around(map)
 
     map.display_visible_map_surface(screen)
-    my_character.draw(screen)
+    my_character.draw(screen, map)
     for bird in birds1:
-        bird.draw(screen)
+        bird.draw(screen, map)
 
     for cloud in clouds:
-        cloud.draw(screen)
+        cloud.draw(screen, map)
 
     mini_map.draw(screen, map, my_character)
 

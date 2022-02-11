@@ -86,12 +86,12 @@ map = Map(random_map_matrix, 0, 0)
 map.draw_whole_map()
 mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 
-my_character = Character(5, 5, map)
-my_character.delete_map_shadow_tiles_around()
+my_character = Character(5, 5)
+my_character.delete_map_shadow_tiles_around(map)
 
 birds1 = [
-    Bird1(random.randint(0, 10), random.randint(0, 10), map)
-    for _ in range(10)
+    Bird1(random.randint(0, 30), random.randint(0, 30))
+    for _ in range(50)
 ]
 
 clouds = [
