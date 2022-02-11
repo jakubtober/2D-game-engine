@@ -5,11 +5,13 @@ from math import sqrt
 import default_game_settings
 from apath import astar
 
-
 from help_functions import (
     global_column_to_local_x_coordinate,
-    global_row_to_local_y_coordinate, tile_row_and_column,
+    global_row_to_local_y_coordinate,
 )
+
+pygame.font.init()
+game_font = pygame.font.Font(pygame.font.get_default_font(), 15)
 
 
 class GameObject:
@@ -315,9 +317,25 @@ class Bird1(GameObject):
             tile_y_coordinate == self.y_coordinate,
         ])
 
-        is_grass = isinstance(map.map_matrix[actual_tile[0]][actual_tile[1]].fixed_tile_game_object, Grass)
+        is_grass = isinstance(map.map_matrix[actual_tile[1]][actual_tile[0]].fixed_tile_game_object, Grass)
 
-        if map.map_matrix[actual_tile[0]][actual_tile[1]].is_visible:
+        text_surface1 = game_font.render(
+            f"Actual tile: {actual_tile}",
+            False,
+            (255, 255, 255),
+        )
+        text_surface2 = game_font.render(
+            f"Tile visible: {map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible}",
+            False,
+            (255, 255, 255),
+        )
+        text_surface3 = game_font.render(
+            f"Actual tile: {1}",
+            False,
+            (255, 255, 255),
+        )
+
+        if map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible:
             if not bird_is_on_the_tile:
                 self.draw_bitmaps_for_the_right_direction(screen)
                 self._animate_bitmaps()
@@ -338,6 +356,9 @@ class Bird1(GameObject):
                         self.move(map)
         else:
             pass
+
+        screen.blit(text_surface1, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 10))
+        screen.blit(text_surface2, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 25))
 
 
 class Cloud(GameObject):

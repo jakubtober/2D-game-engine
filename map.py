@@ -87,8 +87,8 @@ class Map:
                 pygame.draw.rect(self.whole_map_surface, (0, 0, 0), map_shadow_tile, 1)
 
     def delete_shadow_map_tile(self, tile_row_index: int, tile_column_index: int):
-        actual_tile = self.map_matrix[tile_row_index][tile_column_index]
-        self.map_matrix[tile_row_index][tile_column_index].is_visible = True
+        actual_tile = self.map_matrix[tile_column_index][tile_row_index]
+        self.map_matrix[tile_column_index][tile_row_index].is_visible = True
 
         x = tile_column_index * default_game_settings.NODE_SIZE
         y = tile_row_index * default_game_settings.NODE_SIZE
