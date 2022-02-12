@@ -19,7 +19,7 @@ from help_functions import tile_row_and_column
 
 #  Main game loop
 while True:
-    print(fpsClock)
+    # print(fpsClock)
     mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get():
@@ -104,6 +104,7 @@ while True:
 
     map.display_visible_map_surface(screen)
     my_character.draw(screen, map)
+
     for bird in birds1:
         bird.draw(screen, map)
 

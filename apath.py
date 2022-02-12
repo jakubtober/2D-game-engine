@@ -91,7 +91,7 @@ def astar(maze, start, end):
                 continue
 
             # Make sure walkable terrain
-            if not maze[node_position[0]][node_position[1]].is_possible_to_cross:
+            if not maze[node_position[1]][node_position[0]].is_possible_to_cross:
                 continue
 
             # Create new node
