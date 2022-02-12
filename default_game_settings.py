@@ -3,7 +3,6 @@ from pygame import *
 import random
 import pickle
 import os
-import sys
 
 from map import Map, MapTile, MiniMap
 from game_objects import (
@@ -32,7 +31,6 @@ map_exists = os.path.isfile("map.pkl")
 if os.path.isfile("map.pkl"):
     with open('map.pkl', 'rb') as f:
         random_map_matrix = pickle.load(f)
-        print(sys.getsizeof(random_map_matrix))
 else:
     random_map_matrix = None
 
@@ -89,7 +87,6 @@ if not random_map_matrix:
         )
         for row in range(100)
     ]
-    print(sys.getsizeof(random_map_matrix))
 
     # save randomly generated map to a file
     with open('map.pkl', 'wb') as f:
