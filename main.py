@@ -106,8 +106,7 @@ while True:
     my_character.draw(screen, map)
 
     for bird in birds1:
-        if (bird.x_coordinate >= 0) and (bird.x_coordinate <= GAME_SCREEN_SIZE[0]) and (bird.y_coordinate >= 0) and (bird.y_coordinate <= GAME_SCREEN_SIZE[1]):
-            bird.draw(screen, map)
+        bird.draw(screen, map)
 
     for cloud in clouds:
         cloud.draw(screen, map)
