@@ -11,8 +11,8 @@ from help_functions import (
 )
 
 # for debug only
-# pygame.font.init()
-# game_font = pygame.font.Font(pygame.font.get_default_font(), 15)
+pygame.font.init()
+game_font = pygame.font.Font(pygame.font.get_default_font(), 15)
 
 
 class GameObject:
@@ -222,17 +222,13 @@ class Character(GameObject):
 
     @staticmethod
     def find_path(map, start_tile, end_tile):
-        start_tile_not_obstacle = map.map_matrix[start_tile[0]][
-            start_tile[1]
-        ].is_possible_to_cross
-        end_tile_not_obstacle = map.map_matrix[end_tile[0]][
-            end_tile[1]
+        end_tile_not_obstacle = map.map_matrix[end_tile[1]][
+            end_tile[0]
         ].is_possible_to_cross
 
-        if start_tile_not_obstacle and end_tile_not_obstacle:
+        if end_tile_not_obstacle:
             path = astar(map.map_matrix, start_tile, end_tile)
-            if path:
-                return path
+            return path
 
 
 class Bird1(GameObject):
@@ -272,6 +268,25 @@ class Bird1(GameObject):
         self.fps_counter += 1
 
     def move(self, map):
+        actual_tile = self.actual_row_and_column_index(map)
+
+        if actual_tile[1] <= 0:
+            self.x_coordinate = 0
+            self.y_coordinate = random.randint(0, 100) * default_game_settings.NODE_SIZE
+            self.direction = random.choice(["E", "SE", "NE"])
+        elif actual_tile[1] >= 100:
+            self.x_coordinate = 99 * default_game_settings.NODE_SIZE
+            self.y_coordinate = random.randint(0, 100) * default_game_settings.NODE_SIZE
+            self.direction = random.choice(["W", "SW", "NW"])
+        elif actual_tile[0] <= 0:
+            self.y_coordinate = 0
+            self.x_coordinate = random.randint(0, 100) * default_game_settings.NODE_SIZE
+            self.direction = random.choice(["S", "SE", "SW"])
+        elif actual_tile[0] >= 100:
+            self.y_coordinate = 99 * default_game_settings.NODE_SIZE
+            self.x_coordinate = random.randint(0, 100) * default_game_settings.NODE_SIZE
+            self.direction = random.choice(["N", "NE", "NW"])
+
         if self.is_moving:
             if self.direction == "E":
                 self.x_coordinate += 1
@@ -294,15 +309,6 @@ class Bird1(GameObject):
                 self.x_coordinate -= 1
                 self.y_coordinate += 1
 
-        if self.actual_row_and_column_index(map)[1] < 0:
-            self.direction = random.choice(["E", "SE", "NE"])
-        elif self.actual_row_and_column_index(map)[1] > 100:
-            self.direction = random.choice(["W", "SW", "NW"])
-        elif self.actual_row_and_column_index(map)[0] < 0:
-            self.direction = random.choice(["S", "SE", "SW"])
-        elif self.actual_row_and_column_index(map)[0] > 100:
-            self.direction = random.choice(["N", "NE", "NW"])
-
     def draw_bitmaps_for_the_right_direction(self, screen):
         if self.direction == "E" or self.direction == "SE" or self.direction == "NE":
             screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
@@ -317,6 +323,7 @@ class Bird1(GameObject):
         actual_tile = self.actual_row_and_column_index(
             map,
         )
+
         tile_x_coordinate = global_column_to_local_x_coordinate(
             map,
             actual_tile[1],
@@ -331,19 +338,29 @@ class Bird1(GameObject):
             tile_y_coordinate == self.y_coordinate,
         ])
 
-        is_grass = isinstance(map.map_matrix[actual_tile[1]][actual_tile[0]].fixed_tile_game_object, Grass)
+        is_grass = map.map_matrix[actual_tile[1]][actual_tile[0]].is_possible_to_cross
 
         # for debug purposes only
-        # text_surface1 = game_font.render(
-        #     f"Actual tile: {actual_tile}",
-        #     False,
-        #     (255, 255, 255),
-        # )
-        # text_surface2 = game_font.render(
-        #     f"Tile visible: {map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible}",
-        #     False,
-        #     (255, 255, 255),
-        # )
+        text_surface1 = game_font.render(
+            f"Actual tile: {actual_tile}",
+            False,
+            (255, 255, 255),
+        )
+        text_surface2 = game_font.render(
+            f"Tile visible: {map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible}",
+            False,
+            (255, 255, 255),
+        )
+        text_surface3 = game_font.render(
+            f"Tile is grass: {is_grass}",
+            False,
+            (255, 255, 255),
+        )
+        text_surface4 = game_font.render(
+            f"x,y: ({self.x_coordinate, self.y_coordinate})",
+            False,
+            (255, 255, 255),
+        )
 
         if map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible:
             if not bird_is_on_the_tile:
@@ -368,8 +385,10 @@ class Bird1(GameObject):
             pass
 
         # for debug purposes only
-        # screen.blit(text_surface1, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 10))
-        # screen.blit(text_surface2, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 25))
+        screen.blit(text_surface1, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 10))
+        screen.blit(text_surface2, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 25))
+        screen.blit(text_surface3, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 40))
+        screen.blit(text_surface4, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 55))
 
 
 class Cloud(GameObject):

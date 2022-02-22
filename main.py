@@ -30,8 +30,9 @@ while True:
         elif (
             event.type == pygame.MOUSEBUTTONDOWN
             and event.button == 1
-            and not my_character.is_moving
+            # and not my_character.is_moving
         ):
+            my_character.is_moving = False
             clicked_map_tile_row_and_column = tile_row_and_column(mouse_pos)
             my_character.path_end_tile = (
                 clicked_map_tile_row_and_column[0]
