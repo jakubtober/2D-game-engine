@@ -19,7 +19,7 @@ from help_functions import tile_row_and_column
 
 #  Main game loop
 while True:
-    # print(fpsClock)
+    print(fpsClock)
     mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get():
@@ -30,8 +30,9 @@ while True:
         elif (
             event.type == pygame.MOUSEBUTTONDOWN
             and event.button == 1
-            and not my_character.is_moving
+            # and not my_character.is_moving
         ):
+            my_character.is_moving = False
             clicked_map_tile_row_and_column = tile_row_and_column(mouse_pos)
             my_character.path_end_tile = (
                 clicked_map_tile_row_and_column[0]
@@ -106,7 +107,7 @@ while True:
     my_character.draw(screen, map)
 
     for bird in birds1:
-        if (bird.x_coordinate >= 0) and (bird.x_coordinate <= GAME_SCREEN_SIZE[0]) and (bird.y_coordinate >= 0) and (bird.y_coordinate <= GAME_SCREEN_SIZE[1]):
+        if bird.is_on_the_visible_screen:
             bird.draw(screen, map)
 
     for cloud in clouds:

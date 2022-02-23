@@ -29,7 +29,7 @@ map_exists = os.path.isfile("map.pkl")
 
 # open map if available
 if os.path.isfile("map.pkl"):
-    with open('map.pkl', 'rb') as f:
+    with open("map.pkl", "rb") as f:
         random_map_matrix = pickle.load(f)
 else:
     random_map_matrix = None
@@ -89,7 +89,7 @@ if not random_map_matrix:
     ]
 
     # save randomly generated map to a file
-    with open('map.pkl', 'wb') as f:
+    with open("map.pkl", "wb") as f:
         pickle.dump(random_map_matrix, f)
 
 # graphic mode init
@@ -106,10 +106,7 @@ mini_map = MiniMap(GAME_SCREEN_SIZE[0] - 101, 1)
 my_character = Character(5, 5)
 my_character.delete_map_shadow_tiles_around(map)
 
-birds1 = [
-    Bird1(random.randint(0, 90), random.randint(0, 90))
-    for _ in range(200)
-]
+birds1 = [Bird1(random.randint(0, 90), random.randint(0, 90)) for _ in range(200)]
 
 clouds = [
     Cloud(
