@@ -326,7 +326,7 @@ class Bird1(GameObject):
                 self.x_coordinate -= 1
                 self.y_coordinate += 1
 
-    def draw_bitmaps_for_the_right_direction(self, screen):
+    def _draw_bitmaps_for_the_right_direction(self, screen):
         if self.direction == "E" or self.direction == "SE" or self.direction == "NE":
             screen.blit(
                 self.east_bitmaps[self.bitmap_frame_index],
@@ -372,35 +372,35 @@ class Bird1(GameObject):
         is_grass = map.map_matrix[actual_tile[1]][actual_tile[0]].is_possible_to_cross
 
         # for debug purposes only
-        text_surface1 = game_font.render(
-            f"Actual tile: {actual_tile}",
-            False,
-            (255, 255, 255),
-        )
-        text_surface2 = game_font.render(
-            f"Tile visible: {map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible}",
-            False,
-            (255, 255, 255),
-        )
-        text_surface3 = game_font.render(
-            f"Tile is grass: {is_grass}",
-            False,
-            (255, 255, 255),
-        )
-        text_surface4 = game_font.render(
-            f"x,y: ({self.x_coordinate, self.y_coordinate})",
-            False,
-            (255, 255, 255),
-        )
+        # text_surface1 = game_font.render(
+        #     f"Actual tile: {actual_tile}",
+        #     False,
+        #     (255, 255, 255),
+        # )
+        # text_surface2 = game_font.render(
+        #     f"Tile visible: {map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible}",
+        #     False,
+        #     (255, 255, 255),
+        # )
+        # text_surface3 = game_font.render(
+        #     f"Tile is grass: {is_grass}",
+        #     False,
+        #     (255, 255, 255),
+        # )
+        # text_surface4 = game_font.render(
+        #     f"x,y: ({self.x_coordinate, self.y_coordinate})",
+        #     False,
+        #     (255, 255, 255),
+        # )
 
         if map.map_matrix[actual_tile[1]][actual_tile[0]].is_visible:
             if not bird_is_on_the_tile:
-                self.draw_bitmaps_for_the_right_direction(screen)
+                self._draw_bitmaps_for_the_right_direction(screen)
                 self._animate_bitmaps()
                 self.move(map)
             elif bird_is_on_the_tile:
                 if is_grass:
-                    self.draw_bitmaps_for_the_right_direction(screen)
+                    self._draw_bitmaps_for_the_right_direction(screen)
                     self._animate_bitmaps()
                     self.move(map)
                 elif not is_grass:
@@ -411,41 +411,41 @@ class Bird1(GameObject):
                         )
                         self._wait_and_turn_direction(map)
                     else:
-                        self.draw_bitmaps_for_the_right_direction(screen)
+                        self._draw_bitmaps_for_the_right_direction(screen)
                         self._animate_bitmaps()
                         self.move(map)
         else:
             pass
 
         # for debug purposes only
-        screen.blit(
-            text_surface1,
-            (
-                self.x_coordinate,
-                self.y_coordinate + default_game_settings.NODE_SIZE + 10,
-            ),
-        )
-        screen.blit(
-            text_surface2,
-            (
-                self.x_coordinate,
-                self.y_coordinate + default_game_settings.NODE_SIZE + 25,
-            ),
-        )
-        screen.blit(
-            text_surface3,
-            (
-                self.x_coordinate,
-                self.y_coordinate + default_game_settings.NODE_SIZE + 40,
-            ),
-        )
-        screen.blit(
-            text_surface4,
-            (
-                self.x_coordinate,
-                self.y_coordinate + default_game_settings.NODE_SIZE + 55,
-            ),
-        )
+        # screen.blit(
+        #     text_surface1,
+        #     (
+        #         self.x_coordinate,
+        #         self.y_coordinate + default_game_settings.NODE_SIZE + 10,
+        #     ),
+        # )
+        # screen.blit(
+        #     text_surface2,
+        #     (
+        #         self.x_coordinate,
+        #         self.y_coordinate + default_game_settings.NODE_SIZE + 25,
+        #     ),
+        # )
+        # screen.blit(
+        #     text_surface3,
+        #     (
+        #         self.x_coordinate,
+        #         self.y_coordinate + default_game_settings.NODE_SIZE + 40,
+        #     ),
+        # )
+        # screen.blit(
+        #     text_surface4,
+        #     (
+        #         self.x_coordinate,
+        #         self.y_coordinate + default_game_settings.NODE_SIZE + 55,
+        #     ),
+        # )
 
 
 class Cloud(GameObject):
