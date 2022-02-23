@@ -58,6 +58,25 @@ class GameObject:
         )
         self.y_coordinate += default_game_settings.NODE_SIZE * (tile_row_change * (-1))
 
+    @property
+    def is_on_the_visible_screen(self):
+        x_coordinate_gt_zero = self.x_coordinate >= 0
+        x_coordinate_lt_screen_width = (
+            self.x_coordinate <= default_game_settings.GAME_SCREEN_SIZE[0]
+        )
+        y_coordinate_gt_screen_zero = self.y_coordinate >= 0
+        y_coordinate_lt_screen_height = (
+            self.y_coordinate <= default_game_settings.GAME_SCREEN_SIZE[1]
+        )
+        return all(
+            [
+                x_coordinate_gt_zero,
+                x_coordinate_lt_screen_width,
+                y_coordinate_gt_screen_zero,
+                y_coordinate_lt_screen_height,
+            ]
+        )
+
 
 class Character(GameObject):
     character_east_bitmaps = [
@@ -125,8 +144,7 @@ class Character(GameObject):
                 )
 
             circle_x = (
-                global_column_to_local_x_coordinate(map, (self.path_end_tile[1]))
-                + 40
+                global_column_to_local_x_coordinate(map, (self.path_end_tile[1])) + 40
             )
             circle_y = (
                 global_row_to_local_y_coordinate(map, (self.path_end_tile[0])) + 40
@@ -166,8 +184,7 @@ class Character(GameObject):
             == self.x_coordinate
         )
         second_path_tile_y_is_self_y = (
-            global_row_to_local_y_coordinate(map, self.path[1][0])
-            == self.y_coordinate
+            global_row_to_local_y_coordinate(map, self.path[1][0]) == self.y_coordinate
         )
 
         if self.is_moving:
@@ -311,13 +328,25 @@ class Bird1(GameObject):
 
     def draw_bitmaps_for_the_right_direction(self, screen):
         if self.direction == "E" or self.direction == "SE" or self.direction == "NE":
-            screen.blit(self.east_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+            screen.blit(
+                self.east_bitmaps[self.bitmap_frame_index],
+                (self.x_coordinate, self.y_coordinate),
+            )
         elif self.direction == "W" or self.direction == "NW" or self.direction == "SW":
-            screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+            screen.blit(
+                self.west_bitmaps[self.bitmap_frame_index],
+                (self.x_coordinate, self.y_coordinate),
+            )
         elif self.direction == "S":
-            screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+            screen.blit(
+                self.west_bitmaps[self.bitmap_frame_index],
+                (self.x_coordinate, self.y_coordinate),
+            )
         elif self.direction == "N":
-            screen.blit(self.west_bitmaps[self.bitmap_frame_index], (self.x_coordinate, self.y_coordinate))
+            screen.blit(
+                self.west_bitmaps[self.bitmap_frame_index],
+                (self.x_coordinate, self.y_coordinate),
+            )
 
     def draw(self, screen, map):
         actual_tile = self.actual_row_and_column_index(
@@ -333,10 +362,12 @@ class Bird1(GameObject):
             actual_tile[0],
         )
 
-        bird_is_on_the_tile = all([
-            tile_x_coordinate == self.x_coordinate,
-            tile_y_coordinate == self.y_coordinate,
-        ])
+        bird_is_on_the_tile = all(
+            [
+                tile_x_coordinate == self.x_coordinate,
+                tile_y_coordinate == self.y_coordinate,
+            ]
+        )
 
         is_grass = map.map_matrix[actual_tile[1]][actual_tile[0]].is_possible_to_cross
 
@@ -375,7 +406,9 @@ class Bird1(GameObject):
                 elif not is_grass:
                     if self.last_tile_i_waited != actual_tile:
                         self.is_moving = False
-                        screen.blit(self.east_bitmaps[0], (self.x_coordinate, self.y_coordinate))
+                        screen.blit(
+                            self.east_bitmaps[0], (self.x_coordinate, self.y_coordinate)
+                        )
                         self._wait_and_turn_direction(map)
                     else:
                         self.draw_bitmaps_for_the_right_direction(screen)
@@ -385,10 +418,34 @@ class Bird1(GameObject):
             pass
 
         # for debug purposes only
-        screen.blit(text_surface1, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 10))
-        screen.blit(text_surface2, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 25))
-        screen.blit(text_surface3, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 40))
-        screen.blit(text_surface4, (self.x_coordinate, self.y_coordinate + default_game_settings.NODE_SIZE + 55))
+        screen.blit(
+            text_surface1,
+            (
+                self.x_coordinate,
+                self.y_coordinate + default_game_settings.NODE_SIZE + 10,
+            ),
+        )
+        screen.blit(
+            text_surface2,
+            (
+                self.x_coordinate,
+                self.y_coordinate + default_game_settings.NODE_SIZE + 25,
+            ),
+        )
+        screen.blit(
+            text_surface3,
+            (
+                self.x_coordinate,
+                self.y_coordinate + default_game_settings.NODE_SIZE + 40,
+            ),
+        )
+        screen.blit(
+            text_surface4,
+            (
+                self.x_coordinate,
+                self.y_coordinate + default_game_settings.NODE_SIZE + 55,
+            ),
+        )
 
 
 class Cloud(GameObject):
